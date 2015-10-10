@@ -102,29 +102,6 @@ public class LoginActivity extends AppCompatActivity {
 
 
         /* *************************************
-         *               PASSWORD              *
-         ***************************************/
-        mPasswordLoginButton = (Button) findViewById(R.id.login_with_password);
-        mPasswordLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loginWithPassword();
-            }
-        });
-
-        /* *************************************
-         *              ANONYMOUSLY            *
-         ***************************************/
-        /* Load and setup the anonymous login button */
-        mAnonymousLoginButton = (Button) findViewById(R.id.login_anonymously);
-        mAnonymousLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loginAnonymously();
-            }
-        });
-
-        /* *************************************
          *               GENERAL               *
          ***************************************/
         mLoggedInStatusTextView = (TextView) findViewById(R.id.login_status);
@@ -208,9 +185,6 @@ public class LoginActivity extends AppCompatActivity {
             if (this.mAuthData.getProvider().equals("facebook")) {
                 /* Logout from Facebook */
                 LoginManager.getInstance().logOut();
-            } else if (this.mAuthData.getProvider().equals("google")) {
-                /* Logout from Google+ */
-
             }
             /* Update authenticated user and show login buttons */
             setAuthenticatedUser(null);
@@ -243,8 +217,6 @@ public class LoginActivity extends AppCompatActivity {
         if (authData != null) {
             /* Hide all the login buttons */
             mFacebookLoginButton.setVisibility(View.GONE);
-            mPasswordLoginButton.setVisibility(View.GONE);
-            mAnonymousLoginButton.setVisibility(View.GONE);
             mLoggedInStatusTextView.setVisibility(View.VISIBLE);
             /* show a provider specific status text */
             String name = null;
@@ -257,10 +229,26 @@ public class LoginActivity extends AppCompatActivity {
                 name = (String) authData.getProviderData().get("displayName");
                 profilePicture = (String) authData.getProviderData().get("profileImageURL");
 
-                User currentUser = new User(uid);
+                final User currentUser = new User(uid);
                 currentUser.setName(name);
                 currentUser.setProfilePicture(profilePicture);
                 currentUser.put();
+
+                currentUser.accept("1271901889502313");
+
+                User marina = new User("1271901889502313");
+                marina.retrieve(new User.Callback() {
+                    @Override
+                    public void onResult(User marina) {
+                        marina.accept(currentUser.getId());
+                        if ( marina.isMatch(currentUser.getId())) {
+                            Log.d(TAG,"MATCH" );
+                        }
+
+                    }
+                });
+
+                // Change Screen :D  startActivity(new Intent(this, MainActivity.class));
 
 
             } else if (authData.getProvider().equals("anonymous")
@@ -275,8 +263,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             /* No authenticated user show all the login buttons */
             mFacebookLoginButton.setVisibility(View.VISIBLE);
-            mPasswordLoginButton.setVisibility(View.VISIBLE);
-            mAnonymousLoginButton.setVisibility(View.VISIBLE);
             mLoggedInStatusTextView.setVisibility(View.GONE);
         }
         this.mAuthData = authData;
@@ -314,25 +300,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-
-    /* ************************************
-     *              PASSWORD              *
-     **************************************
-     */
-    public void loginWithPassword() {
-        mAuthProgressDialog.show();
-        mFirebaseRef.authWithPassword("test@firebaseuser.com", "test1234", new AuthResultHandler("password"));
-    }
-
-    /* ************************************
-     *             ANONYMOUSLY            *
-     **************************************
-     */
-    private void loginAnonymously() {
-        mAuthProgressDialog.show();
-        mFirebaseRef.authAnonymously(new AuthResultHandler("anonymous"));
-    }
 
     /**
      * Utility class for authentication results
