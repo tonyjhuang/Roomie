@@ -82,7 +82,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* Load the view and display it */
-        Firebase.setAndroidContext(this);
         FacebookSdk.sdkInitialize(this);
 
         setContentView(R.layout.activity_login);
