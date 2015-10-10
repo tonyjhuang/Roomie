@@ -18,6 +18,7 @@ public class FirebaseApiClient implements FirebaseApi {
     private static final String FIREBASE_URL = "https://theroomieapp.firebaseio.com";
 
     public static Firebase firebase = new Firebase(FIREBASE_URL);
+    private MagnetApi magnet = MagnetApi.getInstance();
     private User currentUser;
     private AuthData authData;
 
@@ -114,11 +115,18 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void sendMessage(String recipientId, String message, Callback<Boolean> callback) {
-
+        if(!isLoggedIn()) {
+            Log.e(TAG, "No user found, aborting message.");
+            callback.onResult(false);
+            return;
+        }
+        magnet.sendMessage(currentUser.getId(), recipientId, message, callback);
+        // TODO(tony): Save message to chat here.
     }
 
     @Override
     public void onReceiveMessage(String senderId, String message, Callback<Boolean> callback) {
-
+        // TODO(tony): Save message to chat here.
+        callback.onResult(true);
     }
 }

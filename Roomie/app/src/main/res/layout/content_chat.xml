@@ -20,7 +20,14 @@
             android:orientation="vertical" />
     </ScrollView>
 
+    <View android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@+id/divider"
+        android:background="@color/white" />
+
     <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignTop="@+id/input"
