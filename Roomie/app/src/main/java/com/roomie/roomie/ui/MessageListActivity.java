@@ -1,9 +1,11 @@
 package com.roomie.roomie.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class MessageListActivity extends AppCompatActivity {
 
+    private static final String TAG = "MESSAGE";
     static PrettyTime prettyTime = new PrettyTime();
 
     @Override
@@ -69,6 +72,13 @@ public class MessageListActivity extends AppCompatActivity {
             ((TextView) view.findViewById(R.id.name)).setText(chat.user.getName());
             ((TextView) view.findViewById(R.id.date)).setText(prettyTime.format(chat.updatedAt));
             ((TextView) view.findViewById(R.id.last_message)).setText(chat.lastMessage);
+            view.findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "click?");
+                    startActivity(new Intent(MessageListActivity.this, ChatActivity.class));
+                }
+            });
             container.addView(view);
         }
     }
