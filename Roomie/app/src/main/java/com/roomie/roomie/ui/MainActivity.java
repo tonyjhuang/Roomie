@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
@@ -98,15 +99,15 @@ public class MainActivity extends AppCompatActivity
 
         autoCompleteTextView.setAdapter(autocompleteAdapter);
 
-        SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+        final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
 
         ArrayList<User> users = new ArrayList<User>();
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
 
         CardsAdapter adapter = new CardsAdapter(users);
         cardsContainer.setAdapter(adapter);
@@ -117,6 +118,19 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
                 Log.d(TAG, "clock");
+            }
+        });
+
+        findViewById(R.id.accept).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardsContainer.getTopCardListener().selectRight();
+            }
+        });
+        findViewById(R.id.reject).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardsContainer.getTopCardListener().selectLeft();
             }
         });
     }
@@ -157,12 +171,10 @@ public class MainActivity extends AppCompatActivity
                 //Do something on the left!
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
-                Toast.makeText(MainActivity.this, "Left!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                Toast.makeText(MainActivity.this, "Right!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
