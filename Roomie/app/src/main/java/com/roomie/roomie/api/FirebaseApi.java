@@ -10,6 +10,12 @@ import java.util.List;
  */
 public interface FirebaseApi {
 
+    boolean isLoggedIn();
+
+    void login(String facebookToken, Callback<Boolean> callback);
+
+    void logout();
+
     void setCurrentUser(User user);
 
     void getCurrentUser(Callback<User> callback);
