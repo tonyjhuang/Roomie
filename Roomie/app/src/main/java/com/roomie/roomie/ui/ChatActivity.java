@@ -22,7 +22,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText recipientInput;
     private LinearLayout container;
     private String username;
-    private MagnetAPI magnet = new MagnetAPI();
+    private MagnetAPI magnet = MagnetAPI.getInstance();
     MMX.EventListener receiveMessageListener =
             magnet.getEventListener(new Callback<String>() {
                 @Override

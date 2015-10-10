@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuthProgressDialog.setMessage("Authenticating with Firebase...");
         mAuthProgressDialog.setCancelable(false);
 
-        logout();
+        //logout();
     }
 
     @Override

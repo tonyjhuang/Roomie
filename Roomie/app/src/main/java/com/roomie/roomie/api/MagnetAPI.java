@@ -18,6 +18,18 @@ public class MagnetAPI {
     private static final byte[] PASSWORD = "password".getBytes();
     private static boolean loggedIn = false;
 
+    private static MagnetAPI instance;
+
+    private MagnetAPI() {
+    }
+
+    public static MagnetAPI getInstance() {
+        if (instance == null) {
+            instance = new MagnetAPI();
+        }
+        return instance;
+    }
+
     public void login(final String username, final Callback<Boolean> callback) {
         if (loggedIn) {
             if (callback != null) {

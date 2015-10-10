@@ -23,22 +23,22 @@ public class MockFirebaseApiClient implements FirebaseApi {
 
     @Override
     public boolean isLoggedIn() {
-        return false;
+        return true;
     }
 
     @Override
     public void login(String facebookToken, Callback<Boolean> callback) {
-
+        callback.onResult(true);
     }
 
     @Override
     public void logout() {
-
+        // No-op.
     }
 
     @Override
     public void setCurrentUser(User user) {
-
+        // No-op.
     }
 
     @Override

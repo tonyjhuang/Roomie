@@ -26,9 +26,11 @@ public class FirebaseApiClient implements FirebaseApi {
     private FirebaseApiClient() {
         /* Create the Firebase ref that is used for all authentication with Firebase */
         firebase = new Firebase(FIREBASE_URL);
+        // Check if we have a cached auth.
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
+                Log.d(TAG, "Found cached authdata.");
                 setAuthData(authData);
             }
         });
@@ -53,18 +55,24 @@ public class FirebaseApiClient implements FirebaseApi {
             public void onAuthenticated(AuthData authData) {
                 if (authData == null) {
                     Log.d(TAG, "Failed to log in, authData == null");
-                    callback.onResult(false);
+                    if(callback != null) {
+                        callback.onResult(false);
+                    }
                 } else {
                     Log.d(TAG, "logged in.");
                     setAuthData(authData);
-                    callback.onResult(true);
+                    if(callback != null) {
+                        callback.onResult(true);
+                    }
                 }
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 Log.e(TAG, "Failed to login: " + firebaseError.getMessage());
-                callback.onResult(false);
+                if(callback != null) {
+                    callback.onResult(false);
+                }
             }
         });
     }
@@ -74,9 +82,16 @@ public class FirebaseApiClient implements FirebaseApi {
         this.authData = authData;
         User currentUser = null;
         if(authData != null) {
-            currentUser = new User((String) authData.getProviderData().get("id"));
+            final String userId = (String) authData.getProviderData().get("id");
+            currentUser = new User(userId);
             currentUser.setName((String) authData.getProviderData().get("displayName"));
             currentUser.setProfilePicture((String) authData.getProviderData().get("profileImageURL"));
+            MagnetAPI.getInstance().login(userId, new Callback<Boolean>() {
+                @Override
+                public void onResult(Boolean result) {
+                    Log.d(TAG, result ? "Logged into magnet with id: " + userId : "Couldn't login to Magnet");
+                }
+            });
         }
         setCurrentUser(currentUser);
     }
