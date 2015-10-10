@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.magnet.mmx.client.api.MMX;
@@ -23,6 +24,7 @@ import com.roomie.roomie.api.models.User;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "CHAT";
+    private ScrollView scrollContainer;
     private LinearLayout container;
     private String username;
     private String recipient;
@@ -38,6 +40,7 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Chat");
 
+        scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
         container = (LinearLayout) findViewById(R.id.container);
 
         recipient = getIntent().getStringExtra("USER_ID");
@@ -49,6 +52,7 @@ public class ChatActivity extends AppCompatActivity {
                 TextView textView = new TextView(ChatActivity.this);
                 textView.setText("username is " + username);
                 container.addView(textView);
+                // TODO(tony): Get message history.
             }
         });
 
@@ -99,6 +103,7 @@ public class ChatActivity extends AppCompatActivity {
                 view.findViewById(R.id.image).setBackgroundResource(R.color.colorAccent);
                 ((TextView) view.findViewById(R.id.message)).setText(message);
                 container.addView(view);
+                scrollContainer.fullScroll(View.FOCUS_DOWN);
             }
         });
 
