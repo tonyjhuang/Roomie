@@ -6,6 +6,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.firebase.geofire.core.GeoHash;
 import com.roomie.roomie.ui.Autocomplete;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class User {
         this("100003674382044");
     }
 
-    public void put(){
+    public void put() {
         this.userReference.child("name").setValue(this.name);
         this.userReference.child("profilePicture").setValue(this.profilePicture);
         this.userReference.child("rejectList").setValue(this.rejectList);
@@ -37,28 +38,22 @@ public class User {
         this.userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                User.this.name = snapshot.child("name").toString();
-                User.this.profilePicture = snapshot.child("profilePicture").toString();
+                User.this.name = snapshot.child("name").getValue().toString();
+                User.this.profilePicture = snapshot.child("profilePicture").getValue().toString();
                 User.this.matchesList.clear();
-                for (DataSnapshot match: snapshot.child("matchesList").getChildren()){
-                    User.this.matchesList.add(match.toString());
+                for (DataSnapshot match : snapshot.child("matchesList").getChildren()) {
+                    User.this.matchesList.add(match.getValue().toString());
                 }
                 User.this.acceptList.clear();
-                for (DataSnapshot accept: snapshot.child("acceptList").getChildren()){
-                    User.this.acceptList.add(accept.toString());
+                for (DataSnapshot accept : snapshot.child("acceptList").getChildren()) {
+                    User.this.acceptList.add(accept.getValue().toString());
                 }
                 User.this.rejectList.clear();
-                for (DataSnapshot reject: snapshot.child("rejectList").getChildren()){
-                    User.this.rejectList.add(reject.toString());
+                for (DataSnapshot reject : snapshot.child("rejectList").getChildren()) {
+                    User.this.rejectList.add(reject.getValue().toString());
                 }
                 callback.onResult(User.this);
 
-//                System.out.println(snapshot.child("profilePicture"));
-////                System.out.println("There are " + snapshot.getChildrenCount() + " blog posts");
-////                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-////                    BlogPost post = postSnapshot.getValue(BlogPost.class);
-////                    System.out.println(post.getAuthor() + " - " + post.getTitle());
-////                }
             }
 
             @Override
@@ -74,6 +69,7 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
+        this.put();
     }
 
     public String getProfilePicture() {
@@ -82,6 +78,7 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+        this.put();
     }
 
     public String getName() {
@@ -90,6 +87,7 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+        this.put();
     }
 
     public List<String> getRejectList() {
@@ -97,15 +95,52 @@ public class User {
     }
 
     public void reject(String noList) {
-        this.rejectList.add(noList);
+        if (noList != this.id) {
+            this.rejectList.add(noList);
+            this.put();
+        }
     }
 
     public List<String> getAcceptList() {
         return acceptList;
     }
 
-    public void accept(String yesList) {
-        this.acceptList.add(yesList);
+    public boolean accepted(String id){
+        if (acceptList.contains(id)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMatch(String id){
+        if (matchesList.contains(id)){
+            return true;
+        }
+        return false;
+    }
+
+    public void accept(String id) {
+        if (id == this.getId()){
+            return;
+        }
+        User userMatched = new User(id);
+        userMatched.retrieve(new Callback() {
+            @Override
+            public void onResult(User user) {
+                if ( user.accepted(User.this.id) ){
+                    user.acceptList.remove(User.this.id);
+                    user.matchesList.add(User.this.id);
+                    User.this.matchesList.add(user.id);
+                    user.put();
+                    User.this.put();
+                }
+                else{
+                    User.this.acceptList.add(user.id);
+                    User.this.put();
+                }
+            }
+        });
+
     }
 
     public List<String> getMatches() {
@@ -114,6 +149,7 @@ public class User {
 
     public void addMatch(String match) {
         this.matchesList.add(match);
+        this.put();
     }
 
     private String id;
