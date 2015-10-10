@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.roomie.roomie;
+package com.roomie.roomie.ui;
 
 import android.content.Context;
 import android.graphics.Typeface;

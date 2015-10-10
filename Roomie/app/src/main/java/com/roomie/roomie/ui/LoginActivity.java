@@ -1,12 +1,9 @@
-package com.roomie.roomie;
+package com.roomie.roomie.ui;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +23,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.roomie.roomie.R;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.roomie.roomie;
+package com.roomie.roomie.ui;
 
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,6 +19,7 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
+import com.roomie.roomie.R;
 
 import java.io.IOException;
 import java.util.ArrayList;

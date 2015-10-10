@@ -1,4 +1,4 @@
-package com.roomie.roomie;
+package com.roomie.roomie.ui;
 
 import android.content.res.Resources;
 import android.net.Uri;
@@ -16,6 +16,7 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
+import com.roomie.roomie.R;
 
 /**
  * Created by tonyjhuang on 10/10/15.
