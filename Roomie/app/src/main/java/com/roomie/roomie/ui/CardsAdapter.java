@@ -46,7 +46,7 @@ public class CardsAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(
-                    parent.getContext()).inflate(R.layout.item, parent, false);
+                    parent.getContext()).inflate(R.layout.partial_potential_match, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {

@@ -41,7 +41,7 @@ public class Autocomplete {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             /*
-             Retrieve the place ID of the selected item from the Adapter.
+             Retrieve the place ID of the selected potential_match from the Adapter.
              The adapter stores each Place suggestion in a AutocompletePrediction from which we
              read the place ID and title.
               */

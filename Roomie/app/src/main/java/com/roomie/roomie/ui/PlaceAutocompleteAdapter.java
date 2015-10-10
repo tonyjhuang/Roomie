@@ -105,7 +105,7 @@ public class PlaceAutocompleteAdapter
     }
 
     /**
-     * Returns an item from the last autocomplete query.
+     * Returns an partial_potential_match from the last autocomplete query.
      */
     @Override
     public AutocompletePrediction getItem(int position) {
