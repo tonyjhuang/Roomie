@@ -21,6 +21,10 @@ public class User {
         this.userReference = ref.child("users").child(this.id);
     }
 
+    public User() {
+        this("100003674382044");
+    }
+
     public void put(){
         this.userReference.child("name").setValue(this.name);
         this.userReference.child("profilePicture").setValue(this.profilePicture);

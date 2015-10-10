@@ -103,12 +103,12 @@ public class MainActivity extends AppCompatActivity
         final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
 
         ArrayList<User> users = new ArrayList<User>();
-        users.add(new User(null));
-        users.add(new User(null));
-        users.add(new User(null));
-        users.add(new User(null));
-        users.add(new User(null));
-        users.add(new User(null));
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
 
         CardsAdapter adapter = new CardsAdapter(users);
         cardsContainer.setAdapter(adapter);
