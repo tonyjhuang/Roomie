@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
@@ -17,8 +18,10 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -68,7 +71,9 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         // Retrieve the AutoCompleteTextView that will display Place suggestions.
         autoCompleteTextView = (AutoCompleteTextView)
@@ -90,6 +95,27 @@ public class MainActivity extends AppCompatActivity
 
         autoCompleteTextView.setAdapter(autocompleteAdapter);
 
+        SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+
+        ArrayList<String> al = new ArrayList<String>();
+        al.add("php");
+        al.add("c");
+        al.add("python");
+        al.add("java");
+
+        //choose your favorite adapter
+        ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<String>(this, R.layout.item, R.id.helloText, al );
+        cardsContainer.setAdapter(arrayAdapter);
+        cardsContainer.setFlingListener(getOnFlingListener(al, arrayAdapter));
+
+        // Optionally add an OnItemClickListener
+        cardsContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClicked(int itemPosition, Object dataObject) {
+                Log.d(TAG, "clock");
+            }
+        });
     }
 
     private LatLng getLatLng(String location) {
@@ -106,6 +132,43 @@ public class MainActivity extends AppCompatActivity
             Log.e("Main", e.getMessage());
             return null;
         }
+    }
+
+    private SwipeFlingAdapterView.onFlingListener getOnFlingListener(
+            final ArrayList<String> al, final ArrayAdapter<String> arrayAdapter) {
+        return new SwipeFlingAdapterView.onFlingListener() {
+
+            @Override
+            public void onScroll(float v) {
+
+            }
+
+            @Override
+            public void removeFirstObjectInAdapter() {
+                // this is the simplest way to delete an object from the Adapter (/AdapterView)
+                Log.d("LIST", "removed object!");
+                al.remove(0);
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onLeftCardExit(Object dataObject) {
+                //Do something on the left!
+                //You also have access to the original object.
+                //If you want to use it just cast it (String) dataObject
+                Toast.makeText(MainActivity.this, "Left!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRightCardExit(Object dataObject) {
+                Toast.makeText(MainActivity.this, "Right!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAdapterAboutToEmpty(int itemsInAdapter) {
+                Log.d(TAG, "almost empty!");
+            }
+        };
     }
 
     @Override
