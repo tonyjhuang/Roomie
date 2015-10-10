@@ -52,28 +52,28 @@ public class User {
         this.email = email;
     }
 
-    public List<String> getNoList() {
-        return noList;
+    public List<String> getRejectList() {
+        return rejectList;
     }
 
-    public void setNoList(String noList) {
-        this.noList.add(noList);
+    public void reject(String noList) {
+        this.rejectList.add(noList);
     }
 
-    public List<String> getYesList() {
-        return yesList;
+    public List<String> getAcceptList() {
+        return acceptList;
     }
 
-    public void addYesList(String yesList) {
-        this.yesList.add(yesList);
+    public void accept(String yesList) {
+        this.acceptList.add(yesList);
     }
 
     public List<String> getMatches() {
         return matches;
     }
 
-    public void addMatches(String match) {
-        this.matches.add(match)
+    public void addMatch(String match) {
+        this.matches.add(match);
     }
 
     private String id;
@@ -81,7 +81,7 @@ public class User {
     private String name;
     private String email;
 
-    private List<String> noList;
-    private List<String> yesList;
+    private List<String> rejectList;
+    private List<String> acceptList;
     private List<String> matches;
 }
