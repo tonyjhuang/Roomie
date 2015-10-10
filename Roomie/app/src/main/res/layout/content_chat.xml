@@ -8,28 +8,10 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <EditText
-        android:id="@+id/username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="username"
-        android:imeOptions="actionSend"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@+id/recipient"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/username"
-        android:hint="recipient"
-        android:imeOptions="actionDone"
-        android:inputType="text" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input"
-        android:layout_below="@+id/recipient">
+        android:layout_above="@+id/input">
 
         <LinearLayout
             android:id="@+id/container"

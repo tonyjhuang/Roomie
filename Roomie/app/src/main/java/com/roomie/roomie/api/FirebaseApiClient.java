@@ -21,7 +21,7 @@ public class FirebaseApiClient implements FirebaseApi {
     private User currentUser;
     private AuthData authData;
 
-    private static FirebaseApiClient instance;
+    private static FirebaseApiClient instance = new FirebaseApiClient();
 
     private FirebaseApiClient() {
         // Check if we have a cached auth.
@@ -35,9 +35,6 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     public static FirebaseApiClient getInstance() {
-        if (instance == null) {
-            instance = new FirebaseApiClient();
-        }
         return instance;
     }
 
@@ -75,7 +72,7 @@ public class FirebaseApiClient implements FirebaseApi {
         });
     }
 
-    // Retrieve User information from Authdata.
+    // Retrieve User information from Authdata. Sets up currentUser and Magnet api client.
     private void setAuthData(AuthData authData) {
         this.authData = authData;
         User currentUser = null;

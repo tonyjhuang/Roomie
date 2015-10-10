@@ -45,6 +45,8 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    // If this
+    private static final boolean SHOULD_ADVANCE_TO_MAIN = true;
 
     /* *************************************
      *              GENERAL                *
@@ -97,7 +99,13 @@ public class LoginActivity extends AppCompatActivity {
         mAuthProgressDialog.setMessage("Authenticating with Firebase...");
         mAuthProgressDialog.setCancelable(false);
 
-        //logout();
+        Log.d(TAG, "firebase login status: " + firebaseApi.isLoggedIn());
+        if(firebaseApi.isLoggedIn()) {
+            Log.d(TAG, "logged in...");
+            onLoggedIn();
+        }
+
+        logout();
     }
 
     @Override
@@ -168,6 +176,10 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "logged in? " + firebaseApi.isLoggedIn());
         supportInvalidateOptionsMenu();
         mAuthProgressDialog.hide();
+        if (SHOULD_ADVANCE_TO_MAIN) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 
     private void onLoggedOut() {

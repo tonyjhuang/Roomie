@@ -1,10 +1,13 @@
 package com.roomie.roomie.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -13,14 +16,25 @@ import android.widget.TextView;
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
+import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.MagnetApi;
+import com.roomie.roomie.api.models.User;
 
 public class ChatActivity extends AppCompatActivity {
-    private static final String TAG = "MAIN";
-    private EditText recipientInput;
+    private static final String TAG = "CHAT";
     private LinearLayout container;
     private String username;
+    private String recipient;
+    private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private MagnetApi magnet = MagnetApi.getInstance();
+    MMX.EventListener receiveMessageListener =
+            magnet.getEventListener(new Callback<String>() {
+                @Override
+                public void onResult(String result) {
+                    addMessageToChat(result, false);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +45,17 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Chat");
 
-        EditText usernameInput = (EditText) findViewById(R.id.username);
-        usernameInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        container = (LinearLayout) findViewById(R.id.container);
+
+        recipient = getIntent().getStringExtra("USER_ID");
+
+        firebase.getCurrentUser(new Callback<User>() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (!v.getText().toString().equals("")) {
-                    username = v.getText().toString();
-                    magnet.login(username, null);
-                }
-                Log.d(TAG, "enter");
-                return true;
+            public void onResult(User result) {
+                username = result.getId();
+                TextView textView = new TextView(ChatActivity.this);
+                textView.setText("username is " + username);
+                container.addView(textView);
             }
         });
 
@@ -67,14 +82,11 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d(TAG, "send");
             }
         });
-
-        recipientInput = (EditText) findViewById(R.id.recipient);
-        container = (LinearLayout) findViewById(R.id.container);
     }
 
     private void sendMessage(final String messageText) {
         magnet.sendMessage(username,
-                recipientInput.getText().toString(),
+                recipient,
                 messageText,
                 new Callback<Boolean>() {
                     @Override
@@ -98,14 +110,6 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    MMX.EventListener receiveMessageListener =
-            magnet.getEventListener(new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    addMessageToChat(result, false);
-                }
-            });
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -118,4 +122,21 @@ public class ChatActivity extends AppCompatActivity {
         MMX.unregisterListener(receiveMessageListener);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            firebase.logout();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
