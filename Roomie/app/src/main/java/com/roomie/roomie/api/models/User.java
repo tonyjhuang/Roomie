@@ -7,6 +7,19 @@ import java.util.List;
  * Created by tonyjhuang on 10/10/15.
  */
 public class User {
+
+    public User(String id){
+        this.id = id;
+    }
+
+    public void retrieve(){
+
+    }
+
+    public void put(){
+
+    }
+
     public String getId() {
         return id;
     }
@@ -43,24 +56,24 @@ public class User {
         return noList;
     }
 
-    public void setNoList(List<String> noList) {
-        this.noList = noList;
+    public void setNoList(String noList) {
+        this.noList.add(noList);
     }
 
     public List<String> getYesList() {
         return yesList;
     }
 
-    public void setYesList(List<String> yesList) {
-        this.yesList = yesList;
+    public void addYesList(String yesList) {
+        this.yesList.add(yesList);
     }
 
     public List<String> getMatches() {
         return matches;
     }
 
-    public void setMatches(List<String> matches) {
-        this.matches = matches;
+    public void addMatches(String match) {
+        this.matches.add(match)
     }
 
     private String id;
