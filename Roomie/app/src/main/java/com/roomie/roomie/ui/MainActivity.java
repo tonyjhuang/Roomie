@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.models.User;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         // Register a listener that receives callbacks when a suggestion has been selected
         autoCompleteTextView.setOnItemClickListener(Autocomplete.getClickListener(
-                googleApiClient, autocompleteAdapter, new Autocomplete.Callback() {
+                googleApiClient, autocompleteAdapter, new Callback<Place>() {
                     @Override
                     public void onResult(Place place) {
                         Log.d(TAG, getLatLng(place.getAddress().toString()).toString());

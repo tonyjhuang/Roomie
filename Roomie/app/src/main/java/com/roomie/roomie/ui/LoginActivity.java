@@ -22,6 +22,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.models.User;
 
 import java.util.HashMap;
@@ -237,7 +238,7 @@ public class LoginActivity extends AppCompatActivity {
                 currentUser.accept("1271901889502313");
 
                 User marina = new User("1271901889502313");
-                marina.retrieve(new User.Callback() {
+                marina.retrieve(new Callback<User>() {
                     @Override
                     public void onResult(User marina) {
                         marina.accept(currentUser.getId());

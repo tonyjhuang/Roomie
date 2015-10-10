@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.MagnetAPI;
 
 public class ChatActivity extends AppCompatActivity {
@@ -23,7 +24,7 @@ public class ChatActivity extends AppCompatActivity {
     private String username;
     private MagnetAPI magnet = new MagnetAPI();
     MMX.EventListener receiveMessageListener =
-            magnet.getEventListener(new MagnetAPI.Callback<String>() {
+            magnet.getEventListener(new Callback<String>() {
                 @Override
                 public void onResult(String result) {
                     addMessageToChat(result, false);
@@ -84,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
         magnet.sendMessage(username,
                 recipientInput.getText().toString(),
                 messageText,
-                new MagnetAPI.Callback<Boolean>() {
+                new Callback<Boolean>() {
                     @Override
                     public void onResult(Boolean result) {
                         addMessageToChat(messageText, true);

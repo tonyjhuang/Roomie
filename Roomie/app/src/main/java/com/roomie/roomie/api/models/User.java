@@ -7,6 +7,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.firebase.geofire.core.GeoHash;
+import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.ui.Autocomplete;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class User {
         this.userReference.child("matchesList").setValue(this.matchesList);
     }
 
-    public void retrieve(final Callback callback){
+    public void retrieve(final Callback<User> callback){
         this.userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -124,17 +125,16 @@ public class User {
             return;
         }
         User userMatched = new User(id);
-        userMatched.retrieve(new Callback() {
+        userMatched.retrieve(new Callback<User>() {
             @Override
             public void onResult(User user) {
-                if ( user.accepted(User.this.id) ){
+                if (user.accepted(User.this.id)) {
                     user.acceptList.remove(User.this.id);
                     user.matchesList.add(User.this.id);
                     User.this.matchesList.add(user.id);
                     user.put();
                     User.this.put();
-                }
-                else{
+                } else {
                     User.this.acceptList.add(user.id);
                     User.this.put();
                 }
@@ -162,8 +162,4 @@ public class User {
     private List<String> matchesList = new ArrayList<String>();
 
     Firebase ref = new Firebase("https://theroomieapp.firebaseio.com/");
-
-    public interface Callback {
-        void onResult(User user);
-    }
 }

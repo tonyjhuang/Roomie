@@ -17,6 +17,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.Callback;
 
 /**
  * Created by tonyjhuang on 10/10/15.
@@ -70,7 +71,7 @@ public class Autocomplete {
      * Callback for results from a Places Geo Data API query that shows the first place result in
      * the details view on screen.
      */
-    private static ResultCallback<PlaceBuffer> getUpdatePlaceDetailsCallback(final Callback callback) {
+    private static ResultCallback<PlaceBuffer> getUpdatePlaceDetailsCallback(final Callback<Place> callback) {
         return new ResultCallback<PlaceBuffer>() {
             @Override
             public void onResult(PlaceBuffer places) {
@@ -89,9 +90,5 @@ public class Autocomplete {
                 places.release();
             }
         };
-    }
-
-    public interface Callback {
-        void onResult(Place place);
     }
 }
