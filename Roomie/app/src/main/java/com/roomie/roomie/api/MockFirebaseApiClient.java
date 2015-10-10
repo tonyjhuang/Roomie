@@ -2,6 +2,7 @@ package com.roomie.roomie.api;
 
 import com.roomie.roomie.api.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +20,22 @@ public class MockFirebaseApiClient implements FirebaseApi {
             instance = new MockFirebaseApiClient();
         }
         return instance;
+    }
+
+    private static List<User> mockUsers = new ArrayList<>();
+    static {
+        User tony = new User("100003674382044");
+        tony.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpa1/v/t1.0-1/11295684_672150022917471_7841526459019478803_n.jpg?oh=b065e1f61f62bc08b5229f51e05590ac&oe=56990AD8&__gda__=1452967836_4ec18ad34ed59ff0fb518b66638ef6e2");
+        tony.setName("Tony");
+        mockUsers.add(tony);
+        User rina = new User("100000475412519");
+        rina.setProfilePicture("https://scontent.xx.fbcdn.net/hprofile-xft1/v/t1.0-1/11665373_1204540846238418_8187500592839999169_n.jpg?oh=975407b7ad0cb867a77bbe2517e0dadc&oe=56C8CA12");
+        rina.setName("Marina");
+        mockUsers.add(rina);
+        User ola = new User("100000612016996");
+        ola.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/t31.0-1/c362.106.1324.1324/s720x720/272382_238910722805993_263604_o.jpg");
+        ola.setName("Ola");
+        mockUsers.add(ola);
     }
 
     @Override
@@ -48,7 +65,7 @@ public class MockFirebaseApiClient implements FirebaseApi {
 
     @Override
     public void getPotentialMatches(Callback<List<User>> callback) {
-
+        callback.onResult(mockUsers);
     }
 
     @Override

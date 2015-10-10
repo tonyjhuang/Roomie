@@ -19,8 +19,9 @@ public class CardsAdapter extends BaseAdapter {
 
     private List<User> users;
 
-    public CardsAdapter(List<User> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -53,7 +54,7 @@ public class CardsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.info.setText("Hello!");
+        holder.info.setText(user.getName());
         holder.imageView.setImageResource(R.drawable.marina);
 
         return convertView;

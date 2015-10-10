@@ -17,15 +17,13 @@ public class FirebaseApiClient implements FirebaseApi {
     private static final String TAG = "FIREBASE";
     private static final String FIREBASE_URL = "https://theroomieapp.firebaseio.com";
 
-    private Firebase firebase;
+    public static Firebase firebase = new Firebase(FIREBASE_URL);
     private User currentUser;
     private AuthData authData;
 
     private static FirebaseApiClient instance;
 
     private FirebaseApiClient() {
-        /* Create the Firebase ref that is used for all authentication with Firebase */
-        firebase = new Firebase(FIREBASE_URL);
         // Check if we have a cached auth.
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
@@ -86,7 +84,7 @@ public class FirebaseApiClient implements FirebaseApi {
             currentUser = new User(userId);
             currentUser.setName((String) authData.getProviderData().get("displayName"));
             currentUser.setProfilePicture((String) authData.getProviderData().get("profileImageURL"));
-            MagnetAPI.getInstance().login(userId, new Callback<Boolean>() {
+            MagnetApi.getInstance().login(userId, new Callback<Boolean>() {
                 @Override
                 public void onResult(Boolean result) {
                     Log.d(TAG, result ? "Logged into magnet with id: " + userId : "Couldn't login to Magnet");

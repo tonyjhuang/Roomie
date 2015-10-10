@@ -5,8 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -15,21 +13,14 @@ import android.widget.TextView;
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
-import com.roomie.roomie.api.MagnetAPI;
+import com.roomie.roomie.api.MagnetApi;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "MAIN";
     private EditText recipientInput;
     private LinearLayout container;
     private String username;
-    private MagnetAPI magnet = MagnetAPI.getInstance();
-    MMX.EventListener receiveMessageListener =
-            magnet.getEventListener(new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    addMessageToChat(result, false);
-                }
-            });
+    private MagnetApi magnet = MagnetApi.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +97,14 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
+
+    MMX.EventListener receiveMessageListener =
+            magnet.getEventListener(new Callback<String>() {
+                @Override
+                public void onResult(String result) {
+                    addMessageToChat(result, false);
+                }
+            });
 
     @Override
     protected void onResume() {

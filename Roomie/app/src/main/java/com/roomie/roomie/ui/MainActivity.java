@@ -10,9 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,10 +22,11 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
+import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.MockFirebaseApiClient;
 import com.roomie.roomie.api.models.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -43,9 +42,9 @@ public class MainActivity extends AppCompatActivity
      */
     protected GoogleApiClient googleApiClient;
 
-    private PlaceAutocompleteAdapter autocompleteAdapter;
+    private FirebaseApi firebaseApi = MockFirebaseApiClient.getInstance();
 
-    private AutoCompleteTextView autoCompleteTextView;
+    private CardsAdapter cardsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +57,6 @@ public class MainActivity extends AppCompatActivity
         googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, 0 /* clientId */, this)
                 .addApi(Places.GEO_DATA_API)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle bundle) {
-                        Log.d("Main", "connected to api");
-                        Log.d("Main", getLatLng("brooklyn, nyc").toString());
-                        Log.d("Main", getLatLng("brooklyn").toString());
-                    }
-
-                    @Override
-                    public void onConnectionSuspended(int i) {
-
-                    }
-                })
                 .build();
 
         setContentView(R.layout.activity_main);
@@ -82,12 +68,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         // Retrieve the AutoCompleteTextView that will display Place suggestions.
-        autoCompleteTextView = (AutoCompleteTextView)
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)
                 findViewById(R.id.autocomplete_places);
 
         // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
         // the entire world.
-        autocompleteAdapter = new PlaceAutocompleteAdapter(this, googleApiClient, BOUNDS_USA,
+        PlaceAutocompleteAdapter autocompleteAdapter = new PlaceAutocompleteAdapter(this, googleApiClient, BOUNDS_USA,
                 null);
 
         // Register a listener that receives callbacks when a suggestion has been selected
@@ -101,21 +87,13 @@ public class MainActivity extends AppCompatActivity
 
         autoCompleteTextView.setAdapter(autocompleteAdapter);
 
+        // Setup swipeable cards.
         final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+        cardsAdapter = new CardsAdapter();
+        cardsContainer.setAdapter(cardsAdapter);
+        cardsContainer.setFlingListener(getOnFlingListener(cardsAdapter));
 
-        ArrayList<User> users = new ArrayList<User>();
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-
-        CardsAdapter adapter = new CardsAdapter(users);
-        cardsContainer.setAdapter(adapter);
-        cardsContainer.setFlingListener(getOnFlingListener(adapter));
-
-        // Optionally add an OnItemClickListener
+        // Get click event when user taps on card.
         cardsContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
@@ -123,6 +101,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // Buttons to control cards.
         findViewById(R.id.accept).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +112,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 cardsContainer.getTopCardListener().selectLeft();
+            }
+        });
+
+        // Retrieve potential matches from api, populate cardsAdapter.
+        firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+            @Override
+            public void onResult(List<User> result) {
+                cardsAdapter.setUsers(result);
             }
         });
     }

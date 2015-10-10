@@ -8,6 +8,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.firebase.geofire.core.GeoHash;
 import com.roomie.roomie.api.Callback;
+import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.ui.Autocomplete;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class User {
 
     public User(String id){
         this.id = id;
-        this.userReference = ref.child("users").child(this.id);
+        this.userReference = FirebaseApiClient.firebase.child("users").child(this.id);
     }
 
     public User() {
@@ -160,6 +161,4 @@ public class User {
     private List<String> rejectList = new ArrayList<String>();
     private List<String> acceptList = new ArrayList<String>();
     private List<String> matchesList = new ArrayList<String>();
-
-    Firebase ref = new Firebase("https://theroomieapp.firebaseio.com/");
 }
