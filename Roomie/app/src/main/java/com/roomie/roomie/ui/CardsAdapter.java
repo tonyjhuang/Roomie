@@ -7,9 +7,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,10 +19,10 @@ import java.util.List;
  */
 public class CardsAdapter extends BaseAdapter {
 
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void addUsers(List<User> users) {
+        this.users.addAll(users);
         notifyDataSetChanged();
     }
 
@@ -55,7 +57,7 @@ public class CardsAdapter extends BaseAdapter {
         }
 
         holder.info.setText(user.getName());
-        holder.imageView.setImageResource(R.drawable.marina);
+        Glide.with(parent.getContext()).load(user.getProfilePicture()).into(holder.imageView);
 
         return convertView;
     }

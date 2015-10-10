@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity
 
     private CardsAdapter cardsAdapter;
 
+    private User currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,11 +117,24 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Retrieve potential matches from api, populate cardsAdapter.
-        firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+        // Make sure we have a logged in user.
+        firebaseApi.getCurrentUser(new Callback<User>() {
             @Override
-            public void onResult(List<User> result) {
-                cardsAdapter.setUsers(result);
+            public void onResult(User result) {
+                if (result == null) {
+                    Toast.makeText(MainActivity.this, "Failed to reach server. Are you logged in?", Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Not logged in, not getting cards.");
+                    return;
+                }
+
+                currentUser = result;
+                // Retrieve potential matches from api, populate cardsAdapter.
+                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+                    @Override
+                    public void onResult(List<User> result) {
+                        cardsAdapter.addUsers(result);
+                    }
+                });
             }
         });
     }
@@ -143,6 +158,8 @@ public class MainActivity extends AppCompatActivity
     private SwipeFlingAdapterView.onFlingListener getOnFlingListener(final CardsAdapter adapter) {
         return new SwipeFlingAdapterView.onFlingListener() {
 
+            private boolean loading = false;
+
             @Override
             public void onScroll(float v) {
 
@@ -157,20 +174,37 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onLeftCardExit(Object dataObject) {
-                //Do something on the left!
-                //You also have access to the original object.
-                //If you want to use it just cast it (String) dataObject
+                User swipedUser = (User) dataObject;
+                //currentUser.reject(swipedUser.getId());
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
+                User swipedUser = (User) dataObject;
+                /*currentUser.accept(swipedUser.getId());
+                if (currentUser.isMatch(swipedUser.getId())) {
+                    onMatch(swipedUser.getId());
+                }*/
             }
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
                 Log.d(TAG, "almost empty!");
+                if (loading) return;
+                loading = true;
+                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+                    @Override
+                    public void onResult(List<User> result) {
+                        loading = false;
+                        cardsAdapter.addUsers(result);
+                    }
+                });
             }
         };
+    }
+
+    private void onMatch(String matchedUserId) {
+        Log.d(TAG, "LUCKY YOU! YOU GOT A MATCH!!!");
     }
 
     @Override
