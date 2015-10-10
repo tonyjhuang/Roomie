@@ -66,8 +66,6 @@ public class Autocomplete {
         };
     }
 
-    ;
-
     /**
      * Callback for results from a Places Geo Data API query that shows the first place result in
      * the details view on screen.

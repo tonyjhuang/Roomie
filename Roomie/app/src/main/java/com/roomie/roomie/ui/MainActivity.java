@@ -8,8 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -20,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.models.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,25 +99,38 @@ public class MainActivity extends AppCompatActivity
 
         autoCompleteTextView.setAdapter(autocompleteAdapter);
 
-        SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+        final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
 
-        ArrayList<String> al = new ArrayList<String>();
-        al.add("php");
-        al.add("c");
-        al.add("python");
-        al.add("java");
+        ArrayList<User> users = new ArrayList<User>();
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
+        users.add(new User(null));
 
-        //choose your favorite adapter
-        ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<String>(this, R.layout.item, R.id.helloText, al );
-        cardsContainer.setAdapter(arrayAdapter);
-        cardsContainer.setFlingListener(getOnFlingListener(al, arrayAdapter));
+        CardsAdapter adapter = new CardsAdapter(users);
+        cardsContainer.setAdapter(adapter);
+        cardsContainer.setFlingListener(getOnFlingListener(adapter));
 
         // Optionally add an OnItemClickListener
         cardsContainer.setOnItemClickListener(new SwipeFlingAdapterView.OnItemClickListener() {
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
                 Log.d(TAG, "clock");
+            }
+        });
+
+        findViewById(R.id.accept).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardsContainer.getTopCardListener().selectRight();
+            }
+        });
+        findViewById(R.id.reject).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardsContainer.getTopCardListener().selectLeft();
             }
         });
     }
@@ -135,8 +151,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private SwipeFlingAdapterView.onFlingListener getOnFlingListener(
-            final ArrayList<String> al, final ArrayAdapter<String> arrayAdapter) {
+    private SwipeFlingAdapterView.onFlingListener getOnFlingListener(final CardsAdapter adapter) {
         return new SwipeFlingAdapterView.onFlingListener() {
 
             @Override
@@ -148,8 +163,7 @@ public class MainActivity extends AppCompatActivity
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                al.remove(0);
-                arrayAdapter.notifyDataSetChanged();
+                adapter.remove(0);
             }
 
             @Override
@@ -157,12 +171,10 @@ public class MainActivity extends AppCompatActivity
                 //Do something on the left!
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
-                Toast.makeText(MainActivity.this, "Left!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                Toast.makeText(MainActivity.this, "Right!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
