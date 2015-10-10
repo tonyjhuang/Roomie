@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Roomie</string>
     <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">956671984389773</string>
+    <string name="firebase_url">https://theroomieapp.firebaseio.com</string>
     <string name="autocomplete_hint">Enter place name or address</string>
 
     <!-- getString(String, Object...) does not support HTML tags directly, they need to be encoded first.
