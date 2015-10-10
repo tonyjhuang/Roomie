@@ -22,6 +22,7 @@ import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.models.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -248,10 +249,21 @@ public class LoginActivity extends AppCompatActivity {
             mLoggedInStatusTextView.setVisibility(View.VISIBLE);
             /* show a provider specific status text */
             String name = null;
-            if (authData.getProvider().equals("facebook")
-                    || authData.getProvider().equals("google")
-                    || authData.getProvider().equals("twitter")) {
+            String profilePicture = null;
+            String email = null;
+            String uid = null;
+
+            if (authData.getProvider().equals("facebook")) {
+                uid = (String) authData.getProviderData().get("id");
                 name = (String) authData.getProviderData().get("displayName");
+                profilePicture = (String) authData.getProviderData().get("profileImageURL");
+
+                User currentUser = new User(uid);
+                currentUser.setName(name);
+                currentUser.setProfilePicture(profilePicture);
+                currentUser.put();
+
+
             } else if (authData.getProvider().equals("anonymous")
                     || authData.getProvider().equals("password")) {
                 name = authData.getUid();
