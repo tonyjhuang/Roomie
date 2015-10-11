@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
-    private static final LatLngBounds BOUNDS_USA =
-            new LatLngBounds(new LatLng(25.284438, -125.859375), new LatLng(48.545705, -66.093750));
 
     /**
      * GoogleApiClient wraps our service connection to Google Play Services and provides access
@@ -77,40 +75,29 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        // Retrieve the AutoCompleteTextView that will display Place suggestions.
-        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)
-                findViewById(R.id.autocomplete_places);
-
-        // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
-        // the entire world.
-        PlaceAutocompleteAdapter autocompleteAdapter = new PlaceAutocompleteAdapter(this, googleApiClient, BOUNDS_USA,
-                null);
-
-        // Register a listener that receives callbacks when a suggestion has been selected
-        autoCompleteTextView.setOnItemClickListener(Autocomplete.getClickListener(
-                googleApiClient, autocompleteAdapter, new Callback<Place>() {
+        SearchBox searchBox = (SearchBox) findViewById(R.id.searchbox);
+        searchBox.setGoogleApiClient(googleApiClient);
+        searchBox.setPlaceCallback(new Callback<Place>() {
+            @Override
+            public void onResult(final Place place) {
+                /* User clicked on search result */
+                endOfUsers = false;
+                currentlatLng = place.getLatLng();
+                firebaseApi.getCurrentUser(new Callback<User>() {
                     @Override
-                    public void onResult(final Place place) {
-                        endOfUsers = false;
-                        Log.d(TAG, getLatLng(place.getAddress().toString()).toString());
-                        currentlatLng = place.getLatLng();
-                        firebaseApi.getCurrentUser(new Callback<User>() {
+                    public void onResult(User result) {
+                        new Location(result.getId(), place);
+                        firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<String>>() {
                             @Override
-                            public void onResult(User result) {
-                                new Location(result.getId(), place);
-                                firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<String>>() {
-                                    @Override
-                                    public void onResult(List<String> result) {
-                                        RetrieveUsersToCreateCard(result);
+                            public void onResult(List<String> result) {
+                                RetrieveUsersToCreateCard(result);
 
-                                    }
-                                });
                             }
                         });
                     }
-                }));
-
-        autoCompleteTextView.setAdapter(autocompleteAdapter);
+                });
+            }
+        });
 
         // Setup swipeable cards.
         final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);

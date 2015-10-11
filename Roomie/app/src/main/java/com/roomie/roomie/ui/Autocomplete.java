@@ -25,15 +25,6 @@ import com.roomie.roomie.api.Callback;
 public class Autocomplete {
     private static final String TAG = "Autocomplete";
 
-    public static Spanned formatPlaceDetails(Resources res, CharSequence name, String id,
-                                              CharSequence address, CharSequence phoneNumber, Uri websiteUri) {
-        Log.e(TAG, res.getString(R.string.place_details, name, id, address, phoneNumber,
-                websiteUri));
-        return Html.fromHtml(res.getString(R.string.place_details, name, id, address, phoneNumber,
-                websiteUri));
-
-    }
-
     public static AdapterView.OnItemClickListener getClickListener(
             final GoogleApiClient googleApiClient,
             final PlaceAutocompleteAdapter adapter,

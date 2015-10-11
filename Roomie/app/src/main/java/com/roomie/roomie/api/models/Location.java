@@ -32,12 +32,10 @@ public class Location {
         this.setId(id, place.getAddress().toString());
         this.setLatLng(place.getLatLng());
         FirebaseApiClient.geofire.setLocation(this.id, this.latLng);
-        count++;
     }
 
     private GeoLocation latLng;
     private String id;
     private String placeName;
-    private static int count = 0;
 
 }
