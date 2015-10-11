@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cardsAdapter.getCount() != 0) {
+                if (cardsAdapter.getCount() != 0) {
                     cardsContainer.getTopCardListener().selectRight();
                 }
             }
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         rejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cardsAdapter.getCount() != 0) {
+                if (cardsAdapter.getCount() != 0) {
                     cardsContainer.getTopCardListener().selectLeft();
                 }
             }
@@ -234,6 +234,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_profile) {
+            firebaseApi.resetData();
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_messages) {
             startActivity(new Intent(this, MessageListActivity.class));
@@ -248,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             firebaseApi.getCurrentUser(new Callback<User>() {
                 @Override
                 public void onResult(User result) {
-                    if (result.accepted(id) || result.rejected(id) || result.getId().equals(id))
+                    if (result.accepted(id) || result.rejected(id) || result.isMatch(id) ||result.getId().equals(id))
                         return;
 
                     User u = new User(id);

@@ -14,6 +14,8 @@ import com.bumptech.glide.Glide;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.models.User;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +27,15 @@ public class CardsAdapter extends BaseAdapter {
     private static final String TAG = "CARDS";
 
     private List<User> users = new ArrayList<>();
+    private List<String> listids = new ArrayList<>();
 
     public void addUsers(List<User> users) {
         for (User u: users){
-            if (this.users.contains(u)){
+            if (listids.contains(u.getId())){
                 users.remove(u);
+            }
+            else {
+                listids.add(u.getId());
             }
         }
         this.users.addAll(users);
@@ -72,6 +78,7 @@ public class CardsAdapter extends BaseAdapter {
         }
 
         holder.name.setText(user.getName());
+        holder.bio.setText(user.getBio());
         Glide.with(parent.getContext()).load(user.getProfilePicture()).into(holder.imageView);
 
         // Create stack effect.
@@ -96,9 +103,11 @@ public class CardsAdapter extends BaseAdapter {
         public TextView name;
         public ImageView imageView;
         public CardView cardView;
+        public TextView bio;
 
         public ViewHolder(View view) {
             name = (TextView) view.findViewById(R.id.name);
+            bio = (TextView) view.findViewById(R.id.bio);
             imageView = (ImageView) view.findViewById(R.id.image);
             cardView = (CardView) view.findViewById(R.id.card_container);
         }

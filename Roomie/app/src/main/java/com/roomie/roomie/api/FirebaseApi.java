@@ -30,4 +30,6 @@ public interface FirebaseApi {
     void sendMessage(String recipientId, String message, Callback<Boolean> callback);
 
     void onReceiveMessage(String senderId, String message, Callback<Boolean> callback);
+
+    void resetData();
 }

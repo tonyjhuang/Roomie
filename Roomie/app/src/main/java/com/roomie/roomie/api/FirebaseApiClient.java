@@ -10,6 +10,7 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.Message;
 import com.roomie.roomie.api.models.User;
 
@@ -33,8 +34,88 @@ public class FirebaseApiClient implements FirebaseApi {
 
     private static FirebaseApiClient instance = new FirebaseApiClient();
 
+    public void resetData() {
+        User ola = new User("100000612016996");
+        ola.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/t31.0-1/c362.106.1324.1324/s720x720/272382_238910722805993_263604_o.jpg");
+        ola.setName("Ola Spyra");
+        ola.setBio("Hi! I'm from Poland and I love watermelons :D PS: Im never home.");
+        new Location(ola.getId(), new LatLng(40.712784, -74.005941), "NewYork");
+        new Location(ola.getId(), new LatLng(27.664827, -81.515754), "Florida");
+        ola.clearArrays();
+        User christian = new User("100000755704753");
+        christian.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/v/t1.0-1/1240137_559835827384936_789079275_n.jpg?oh=e5ff5f47ee085d352a1fef4765b1fd9c&oe=568945C0&__gda__=1452379486_69b01253338cff11bf8f219069a1d0b6");
+        christian.setName("Christian Dullweber");
+        christian.setBio("Moving to California for an internship. Looking for quiet and clean roommate.");
+        new Location(christian.getId(), new LatLng(36.054445, -112.140111), "grandCanyon");
+        new Location(christian.getId(), new LatLng(36.169941, -115.139830), "Las Vegas");
+        christian.clearArrays();
+        User david = new User("1439577444");
+        david.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/t31.0-8/1507440_10201113373303348_1245057313_o.jpg");
+        david.setName("David Brown");
+        david.setBio("I prefer living by myself but you are welcome to crash in my place if you have to.");
+        david.clearArrays();
+        david.accept("1271901889502313", new Callback<User>() {
+            @Override
+            public void onResult(User result) {
+            }
+        });
+        new Location(david.getId(), new LatLng(33.683947, -117.794694), "Irvine");
+        new Location(david.getId(), new LatLng(37.368830, -122.036350), "Sunnyvale");
+        User ally = new User("1292436436");
+        ally.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xta1/v/t1.0-9/11118506_10204327981901650_6048266467256362903_n.jpg?oh=e9c5a9d0a511cacc04d1d637574f21eb&oe=568520F5");
+        ally.setName("Allison Kim");
+        new Location(ally.getId(), new LatLng(42.360082, -71.058880), "Boston");
+        new Location(ally.getId(), new LatLng(40.058324, -74.405661), "Jersey");
+        ally.setBio("WHAT ARE THOOOOOOOOOOOOOOOOOOSE?");
+        ally.clearArrays();
+        ally.accept("733994556733017", new Callback<User>() {
+            @Override
+            public void onResult(User result) {
+            }
+        });
+        User jacob = new User("735156277");
+        jacob.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xlp1/t31.0-8/11224840_10153430472741278_289750567507577625_o.jpg");
+        jacob.setName("Jacob Sharf");
+        new Location(jacob.getId(), new LatLng(42.360082, -71.058880), "Mountain View");
+        new Location(jacob.getId(), new LatLng(40.058324, -74.405661), "San Francisco");
+        jacob.clearArrays();
+        jacob.setBio("Looking for a a place up to $700/month.");
+        User jonathan = new User("735156277");
+        jonathan.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-ash2/t31.0-8/1911938_10153468476624057_2634192120274430307_o.jpg");
+        jonathan.setName("Jonathan Wu");
+        jonathan.setBio("I like rock climbing and diving. :D No pets.");
+        new Location(jonathan.getId(), new LatLng(43.464258, -80.520410), "Waterloo,ON");
+        new Location(jonathan.getId(), new LatLng(37.338208, -121.886329), "San Jose");
+        jonathan.clearArrays();
+        jonathan.accept("1271901889502313", new Callback<User>() {
+            @Override
+            public void onResult(User result) {
+            }
+        });
+        User franck = new User("100000184352342");
+        franck.setBio("");
+        franck.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/11006417_1107984442551024_3173246781727446957_n.jpg?oh=0e43c8f5f8155f5daeb5463251594715&oe=569E3E22");
+        franck.setName("Gilles Franck");
+        new Location(franck.getId(), new LatLng(42.886447, -78.878369), "Buffalo");
+        new Location(franck.getId(), new LatLng(37.441883, -122.143019), "Palo Alto");
+        franck.clearArrays();
+        franck.setBio("I want to make new friends :)");
+        User tony = new User("733994556733017");
+        tony.clearArrays();
+        tony.clearMessages();
+        tony.setBio("Hi I'm the most friendly roommate ever :D");
+        User rina = new User("1271901889502313");
+        rina.setProfilePicture("https://scontent.xx.fbcdn.net/hprofile-xft1/v/t1.0-1/11665373_1204540846238418_8187500592839999169_n.jpg?oh=975407b7ad0cb867a77bbe2517e0dadc&oe=56C8CA12");
+        rina.setName("Marina Coimbra");
+        rina.setBio("Crazy cat lady from Brazil. Looking for a place for me and my two baby cats <3.");
+        rina.clearArrays();
+        rina.clearMessages();
+
+    }
+
     private FirebaseApiClient() {
         // Check if we have a cached auth.
+        this.resetData();
         firebase.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
@@ -166,12 +247,13 @@ public class FirebaseApiClient implements FirebaseApi {
         }
         magnet.sendMessage(currentUser.getId(), recipientId, message, callback);
         messageModel.sendMessage(currentUser.getId(), recipientId, message);
+        messageModel.receiveMessage(recipientId, currentUser.getId(), message);
     }
 
     @Override
     public void onReceiveMessage(String senderId, String message, Callback<Boolean> callback) {
         Log.d(TAG, "RECEIVING MESSAGE!!!!");
-        messageModel.receiveMessage(currentUser.getId(), senderId, message);
+        //messageModel.receiveMessage(currentUser.getId(), senderId, message);
         callback.onResult(true);
     }
 }

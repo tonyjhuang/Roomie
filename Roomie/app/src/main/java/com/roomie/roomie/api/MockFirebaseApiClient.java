@@ -1,6 +1,7 @@
 package com.roomie.roomie.api;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 
 import java.util.ArrayList;
@@ -15,6 +16,17 @@ public class MockFirebaseApiClient implements FirebaseApi {
     private static MockFirebaseApiClient instance;
 
     static {
+//        User ola = new User("100000612016996");
+//        ola.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/t31.0-1/c362.106.1324.1324/s720x720/272382_238910722805993_263604_o.jpg");
+//        ola.setName("Ola Spyra");
+//        new Location(ola.getId(), new LatLng(40.712784, -74.005941), "NewYork");
+//        new Location(ola.getId(), new LatLng(27.664827, -81.515754), "Florida");
+//        User christian = new User("100000755704753");
+//        christian.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/v/t1.0-1/1240137_559835827384936_789079275_n.jpg?oh=e5ff5f47ee085d352a1fef4765b1fd9c&oe=568945C0&__gda__=1452379486_69b01253338cff11bf8f219069a1d0b6");
+//        christian.setName("Christian Dullweber");
+//        new Location(christian.getId(), new LatLng(36.054445, -112.140111), "grandCanyon");
+//        new Location(ola.getId(), new LatLng(36.169941, -115.139830), "Las Vegas");
+
         /*User tony = new User("733994556733017");
         tony.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpa1/v/t1.0-1/11295684_672150022917471_7841526459019478803_n.jpg?oh=b065e1f61f62bc08b5229f51e05590ac&oe=56990AD8&__gda__=1452967836_4ec18ad34ed59ff0fb518b66638ef6e2");
         tony.setName("Tony");
@@ -43,6 +55,9 @@ public class MockFirebaseApiClient implements FirebaseApi {
         }
         return instance;
     }
+
+    @Override
+    public void resetData(){}
 
     @Override
     public String getCurrentUserId(){

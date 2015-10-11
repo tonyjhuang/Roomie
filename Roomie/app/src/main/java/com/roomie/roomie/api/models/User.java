@@ -30,6 +30,7 @@ public class User {
         this.userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                User.this.bio = snapshot.child("bio").getValue().toString();
                 User.this.name = snapshot.child("name").getValue().toString();
                 User.this.profilePicture = snapshot.child("profilePicture").getValue().toString();
                 User.this.matchesList.clear();
@@ -150,6 +151,19 @@ public class User {
 
     }
 
+    public void clearArrays(){
+        rejectList.clear();
+        acceptList.clear();
+        matchesList.clear();
+        this.userReference.child("rejectList").setValue(rejectList);
+        this.userReference.child("acceptList").setValue(acceptList);
+        this.userReference.child("matchesList").setValue(matchesList);
+    }
+
+    public void clearMessages(){
+        this.userReference.child("messages").setValue(null);
+    }
+
     public List<String> getMatches() {
         return matchesList;
     }
@@ -158,6 +172,17 @@ public class User {
     private String profilePicture;
     private String name;
     private Firebase userReference;
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+        this.userReference.child("bio").setValue(bio);
+    }
+
+    private String bio;
 
     private List<String> rejectList = new ArrayList<String>();
     private List<String> acceptList = new ArrayList<String>();
