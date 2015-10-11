@@ -36,6 +36,11 @@ public class CardsAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        users = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return users.size();

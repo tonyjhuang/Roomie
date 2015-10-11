@@ -128,7 +128,7 @@ public class User {
         return false;
     }
 
-    public void accept(String id) {
+    public void accept(String id, final Callback<User> callback) {
         if (id.equals(this.getId())){
             return;
         }
@@ -142,9 +142,11 @@ public class User {
                     User.this.matchesList.add(user.id);
                     user.put();
                     User.this.put();
+                    callback.onResult(User.this);
                 } else {
                     User.this.acceptList.add(user.id);
                     User.this.put();
+                    callback.onResult(User.this);
                 }
             }
         });

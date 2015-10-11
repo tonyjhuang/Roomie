@@ -22,7 +22,6 @@ import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
-import com.roomie.roomie.api.MockFirebaseApiClient;
 import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 import com.software.shell.fab.ActionButton;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     protected GoogleApiClient googleApiClient;
 
-    private FirebaseApi firebaseApi = MockFirebaseApiClient.getInstance();
+    private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
 
     private CardsAdapter cardsAdapter;
 
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onResult(final Place place) {
                 /* User clicked on search result */
                 currentlatLng = place.getLatLng();
+                cardsAdapter.clear();
                 firebaseApi.getCurrentUser(new Callback<User>() {
                     @Override
                     public void onResult(User result) {
@@ -183,15 +183,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onRightCardExit(Object dataObject) {
                 final User swipedUser = (User) dataObject;
-                firebaseApi.getCurrentUser(new Callback<User>() {
+                currentUser.accept(swipedUser.getId(), new Callback<User>() {
                     @Override
                     public void onResult(User result) {
-                        result.accept(swipedUser.getId());
-                        if (result.isMatch(swipedUser.getId())) {
+                        currentUser = result;
+                        if (currentUser.isMatch(swipedUser.getId())) {
                             onMatch(swipedUser.getId());
                         }
                     }
                 });
+
             }
 
             @Override
