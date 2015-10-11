@@ -62,4 +62,6 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     // Searchbar
     compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
+    // Textview fonts
+    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
 }

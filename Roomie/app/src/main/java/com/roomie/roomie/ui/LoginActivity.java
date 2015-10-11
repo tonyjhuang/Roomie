@@ -1,31 +1,29 @@
 package com.roomie.roomie.ui;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
-import com.firebase.client.AuthData;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
-import com.roomie.roomie.api.models.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,13 +45,13 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     // If this
     private static final boolean SHOULD_ADVANCE_TO_MAIN = true;
-
+    final String fonts[] = {"MavenPro-Bold.ttf",
+            "Montserrat-Bold.ttf", "Raleway-SemiBold.ttf", "Righteous-Regular.ttf"};
+    int i = 0;
     /* *************************************
      *              GENERAL                *
      ***************************************/
     private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
-    /* TextView that is used to display information about the logged in user */
-    private TextView mLoggedInStatusTextView;
     /* A dialog that is presented until the Firebase authentication finished. */
     private ProgressDialog mAuthProgressDialog;
     /* *************************************
@@ -91,7 +89,6 @@ public class LoginActivity extends AppCompatActivity {
         /* *************************************
          *               GENERAL               *
          ***************************************/
-        mLoggedInStatusTextView = (TextView) findViewById(R.id.login_status);
 
         /* Setup the progress dialog that is displayed later when authenticating with Firebase */
         mAuthProgressDialog = new ProgressDialog(this);
@@ -100,12 +97,27 @@ public class LoginActivity extends AppCompatActivity {
         mAuthProgressDialog.setCancelable(false);
 
         Log.d(TAG, "firebase login status: " + firebaseApi.isLoggedIn());
-        if(firebaseApi.isLoggedIn()) {
+        if (firebaseApi.isLoggedIn()) {
             Log.d(TAG, "logged in...");
             onLoggedIn();
         }
 
         logout();
+
+
+        final TextView appName = (TextView) findViewById(R.id.app_name);
+        Typeface font = Typeface.createFromAsset(getAssets(), "Montserrat-Bold.ttf");
+        appName.setTypeface(font);
+
+
+        // Make the ImageView draw behind the statusbar.
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+
+        Glide.with(this).load(R.drawable.bg).centerCrop().into((ImageView) findViewById(R.id.bg));
     }
 
     @Override
@@ -158,23 +170,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void onLoggedIn() {
-        /* Hide all the login buttons */
-        mFacebookLoginButton.setVisibility(View.GONE);
-        mLoggedInStatusTextView.setVisibility(View.VISIBLE);
-
-        firebaseApi.getCurrentUser(new Callback<User>() {
-            @Override
-            public void onResult(final User result) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mLoggedInStatusTextView.setText("Logged in as " + result.getName());
-                    }
-                });
-            }
-        });
-
-        Log.d(TAG, "logged in? " + firebaseApi.isLoggedIn());
         supportInvalidateOptionsMenu();
         mAuthProgressDialog.hide();
         if (SHOULD_ADVANCE_TO_MAIN) {
@@ -185,7 +180,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onLoggedOut() {
         mFacebookLoginButton.setVisibility(View.VISIBLE);
-        mLoggedInStatusTextView.setVisibility(View.GONE);
         supportInvalidateOptionsMenu();
         mAuthProgressDialog.hide();
     }
