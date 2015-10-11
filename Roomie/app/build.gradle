@@ -30,6 +30,9 @@ repositories {
     maven {
         url "https://repo.magnet.com/artifactory/public"
     }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 dependencies {
@@ -57,4 +60,6 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     // CircleImageView
     compile 'de.hdodenhof:circleimageview:2.0.0'
+    // Searchbar
+    compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
 }
