@@ -4,6 +4,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApiClient;
 
@@ -170,7 +171,14 @@ public class User {
     }
 
     public int getAge() {
-        return new Random().nextInt(20) + 18;
+        return new Random().nextInt(7) + 18;
+    }
+
+    public List<Integer> getPreferences() {
+        ArrayList<Integer> traits = new ArrayList<>();
+        traits.add(R.drawable.trait_parking);
+        traits.add(R.drawable.trait_pets);
+        return traits;
     }
 
     private String id;
