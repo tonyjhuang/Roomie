@@ -34,6 +34,7 @@ public class ChatActivity extends AppCompatActivity {
     private String recipientId;
     private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private MagnetApi magnet = MagnetApi.getInstance();
+
     MMX.EventListener receiveMessageListener =
             magnet.getEventListener(new Callback<String>() {
                 @Override
