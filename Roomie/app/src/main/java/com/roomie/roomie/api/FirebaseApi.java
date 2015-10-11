@@ -19,6 +19,8 @@ public interface FirebaseApi {
 
     void logout();
 
+    String getCurrentUserId();
+
     void setCurrentUser(User user);
 
     void getCurrentUser(Callback<User> callback);

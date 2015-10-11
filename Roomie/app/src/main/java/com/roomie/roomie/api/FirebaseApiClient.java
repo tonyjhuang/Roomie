@@ -54,6 +54,11 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     @Override
+    public String getCurrentUserId(){
+        return currentUser.getId();
+    }
+
+    @Override
     public void login(String facebookToken, final Callback<Boolean> callback) {
         firebase.authWithOAuthToken("facebook", facebookToken, new Firebase.AuthResultHandler() {
             @Override

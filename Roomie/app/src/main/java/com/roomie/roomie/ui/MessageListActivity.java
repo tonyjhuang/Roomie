@@ -15,6 +15,7 @@ import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.FirebaseUtils;
+import com.roomie.roomie.api.models.Message;
 import com.roomie.roomie.api.models.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -106,14 +107,15 @@ public class MessageListActivity extends AppCompatActivity {
             @Override
             public void run() {
                 for (final User match : matches) {
-                    View view = getLayoutInflater().inflate(R.layout.partial_message_item, container, false);
+                    final View view = getLayoutInflater().inflate(R.layout.partial_message_item, container, false);
                     Glide.with(MessageListActivity.this)
                             .load(match.getProfilePicture())
                             .centerCrop()
                             .into((ImageView) view.findViewById(R.id.image));
                     ((TextView) view.findViewById(R.id.name)).setText(match.getName());
                     //((TextView) view.findViewById(R.id.date)).setText(prettyTime.format(chat.updatedAt));
-                    ((TextView) view.findViewById(R.id.last_message)).setText("uhhhh"); //chat.lastMessage);
+
+
                     view.findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -122,7 +124,15 @@ public class MessageListActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     });
-                    container.addView(view);
+                    Message lastMessage = new Message();
+                    lastMessage.getLastMessage(firebase.getCurrentUserId(), match.getId(), new Callback<String>() {
+                        @Override
+                        public void onResult(String result) {
+                            ((TextView) view.findViewById(R.id.last_message)).setText(result); //chat.lastMessage);
+                            container.addView(view);
+
+                        }
+                    });
                 }
             }
         });

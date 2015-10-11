@@ -69,20 +69,19 @@ public class Message {
         Firebase users_dir = FirebaseApiClient.firebase.child("users");
         Firebase message_dir = users_dir.child(currentUserId).child("messages").child(recipient);
         message_dir.addListenerForSingleValueEvent(new ValueEventListener() {
+            String ret;
+            @Override
             public void onDataChange(DataSnapshot snapshot) {
-                GenericTypeIndicator<List<HashMap>> t = new GenericTypeIndicator<List<HashMap>>() {};
-                List<HashMap> messages = snapshot.getValue(t);
-                if( messages == null ) {
-                    System.out.println("No messages");
+                for (DataSnapshot id : snapshot.getChildren()) {
+                    ret = id.child("message").getValue().toString();
+                    //ret.add((HashMap<String, String>) id.getValue());
                 }
-                else {
-                    callback.onResult( messages.get(messages.size() - 1).get("message").toString());
-                }
+                callback.onResult(ret);
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                
+                System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
     }

@@ -45,6 +45,10 @@ public class MockFirebaseApiClient implements FirebaseApi {
     }
 
     @Override
+    public String getCurrentUserId(){
+        return "";
+    }
+    @Override
     public boolean isLoggedIn() {
         return true;
     }

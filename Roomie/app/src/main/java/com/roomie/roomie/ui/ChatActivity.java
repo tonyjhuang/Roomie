@@ -67,7 +67,7 @@ public class ChatActivity extends AppCompatActivity {
         scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
         container = (LinearLayout) findViewById(R.id.container);
 
-        final User recipient = new User(getIntent().getStringExtra("USER_ID"));
+        recipient = new User(getIntent().getStringExtra("USER_ID"));
         recipient.retrieve(new Callback<User>() {
             @Override
             public void onResult(User result) {
@@ -76,11 +76,12 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         firebase.getCurrentUser(new Callback<User>() {
+            final String rec_id = new String(recipient.getId());
             @Override
             public void onResult(User result) {
                 currentUser = result;
                 Message message = new Message();
-                message.getMessageHistory(currentUser.getId(), recipient.getId(), new Callback<List<HashMap<String, String>>>() {
+                message.getMessageHistory(currentUser.getId(), rec_id, new Callback<List<HashMap<String, String>>>() {
                     @Override
                     public void onResult(List<HashMap<String, String>> result) {
                         for (HashMap<String, String> r : result) {
