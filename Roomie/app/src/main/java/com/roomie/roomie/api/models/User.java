@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Created by tonyjhuang on 10/10/15.
+ * User tony = new User("tonyid");
+ * tony.setName("frank")
  */
 public class User {
 

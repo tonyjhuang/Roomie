@@ -46,7 +46,7 @@ public class MessageListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Messages");
 
         container = (LinearLayout) findViewById(R.id.container);
-/*
+
         firebase.getCurrentUser(new Callback<User>() {
             @Override
             public void onResult(User currentUser) {
@@ -58,8 +58,8 @@ public class MessageListActivity extends AppCompatActivity {
                 });
             }
         });
-        */
 
+/*
         User user0 = MockFirebaseApiClient.mockUsers.get(0);
         User user1 = MockFirebaseApiClient.mockUsers.get(1);
         User user2 = MockFirebaseApiClient.mockUsers.get(2);
@@ -102,7 +102,7 @@ public class MessageListActivity extends AppCompatActivity {
                 }
             });
             container.addView(view);
-        }
+        }*/
     }
 
     private void populateMessageList(final List<User> matches) {

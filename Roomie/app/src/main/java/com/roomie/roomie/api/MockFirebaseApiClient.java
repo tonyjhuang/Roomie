@@ -15,7 +15,7 @@ public class MockFirebaseApiClient implements FirebaseApi {
     private static MockFirebaseApiClient instance;
 
     static {
-        User tony = new User("733994556733017");
+        /*User tony = new User("733994556733017");
         tony.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpa1/v/t1.0-1/11295684_672150022917471_7841526459019478803_n.jpg?oh=b065e1f61f62bc08b5229f51e05590ac&oe=56990AD8&__gda__=1452967836_4ec18ad34ed59ff0fb518b66638ef6e2");
         tony.setName("Tony");
         mockUsers.add(tony);
@@ -31,6 +31,7 @@ public class MockFirebaseApiClient implements FirebaseApi {
         christian.setProfilePicture("https://fbcdn-profile-a.akamaihd.net/hprofile-ak-ash2/v/t1.0-1/1240137_559835827384936_789079275_n.jpg?oh=e5ff5f47ee085d352a1fef4765b1fd9c&oe=568945C0&__gda__=1452379486_69b01253338cff11bf8f219069a1d0b6");
         christian.setName("Christian");
         mockUsers.add(christian);
+        */
     }
 
     private MockFirebaseApiClient() {

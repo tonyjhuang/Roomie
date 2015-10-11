@@ -114,7 +114,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void getCurrentUser(Callback<User> callback) {
-        callback.onResult(currentUser);
+        currentUser.retrieve(callback);
     }
 
     @Override
