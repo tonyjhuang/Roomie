@@ -79,12 +79,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onResult(final Place place) {
                 /* User clicked on search result */
                 currentlatLng = place.getLatLng();
+                final String address = place.getAddress().toString();
                 cardsAdapter.clear();
                 firebaseApi.getCurrentUser(new Callback<User>() {
                     @Override
                     public void onResult(User result) {
-                        new Location(result.getId(), place);
-                        firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<String>>() {
+                        new Location(result.getId(), currentlatLng, address);
+                        firebaseApi.getPotentialMatches(currentlatLng, new Callback<List<String>>() {
                             @Override
                             public void onResult(List<String> result) {
                                 RetrieveUsersToCreateCard(result);

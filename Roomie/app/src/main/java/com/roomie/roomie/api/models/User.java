@@ -30,14 +30,6 @@ public class User {
         this("100003674382044");
     }
 
-    public void put() {
-        this.userReference.child("name").setValue(this.name);
-        this.userReference.child("profilePicture").setValue(this.profilePicture);
-        this.userReference.child("rejectList").setValue(this.rejectList);
-        this.userReference.child("acceptList").setValue(this.acceptList);
-        this.userReference.child("matchesList").setValue(this.matchesList);
-    }
-
     public void retrieve(final Callback<User> callback){
         this.userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -73,7 +65,7 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-        this.put();
+        this.userReference.child("name").setValue(this.name);
     }
 
     public String getProfilePicture() {
@@ -82,7 +74,7 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
-        this.put();
+        this.userReference.child("profilePicture").setValue(this.profilePicture);
     }
 
     public String getName() {
@@ -91,7 +83,7 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-        this.put();
+        this.userReference.child("name").setValue(this.name);
     }
 
     public List<String> getRejectList() {
@@ -101,7 +93,7 @@ public class User {
     public void reject(String noList) {
         if (!noList.equals(this.id)) {
             this.rejectList.add(noList);
-            this.put();
+            this.userReference.child("rejectList").setValue(this.rejectList);
         }
     }
 
@@ -130,6 +122,14 @@ public class User {
         return false;
     }
 
+    public void addMatch(String id){
+        if (matchesList.contains(id) || id.equals(this.getId())){
+            return;
+        }
+        matchesList.add(id);
+        this.userReference.child("matchesList").setValue(this.matchesList);
+    }
+
     public void accept(String id, final Callback<User> callback) {
         if (id.equals(this.getId())){
             return;
@@ -140,14 +140,13 @@ public class User {
             public void onResult(User user) {
                 if (user.accepted(User.this.id)) {
                     user.acceptList.remove(User.this.id);
-                    user.matchesList.add(User.this.id);
-                    User.this.matchesList.add(user.id);
-                    user.put();
-                    User.this.put();
+                    user.userReference.child("acceptList").setValue(user.acceptList);
+                    user.addMatch(User.this.id);
+                    User.this.addMatch(user.getId());
                     callback.onResult(User.this);
                 } else {
                     User.this.acceptList.add(user.id);
-                    User.this.put();
+                    User.this.userReference.child("acceptList").setValue(User.this.acceptList);
                     callback.onResult(User.this);
                 }
             }
@@ -157,11 +156,6 @@ public class User {
 
     public List<String> getMatches() {
         return matchesList;
-    }
-
-    public void addMatch(String match) {
-        this.matchesList.add(match);
-        this.put();
     }
 
     private String id;
