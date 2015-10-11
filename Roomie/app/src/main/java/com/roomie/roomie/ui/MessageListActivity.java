@@ -12,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.roomie.roomie.R;
+import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.FirebaseApiClient;
+import com.roomie.roomie.api.MockFirebaseApiClient;
 import com.roomie.roomie.api.models.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -23,6 +26,7 @@ import java.util.List;
 
 public class MessageListActivity extends AppCompatActivity {
 
+    private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private static final String TAG = "MESSAGE";
     static PrettyTime prettyTime = new PrettyTime();
 
@@ -35,14 +39,11 @@ public class MessageListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Messages");
 
-        User user0 = new User("");
-        user0.setName("Marina");
-        User user1 = new User("");
-        user1.setName("Tony");
-        User user2 = new User("");
-        user2.setName("Christian");
-        User user3 = new User("");
-        user3.setName("Ola");
+
+        User user0 = MockFirebaseApiClient.mockUsers.get(0);
+        User user1 = MockFirebaseApiClient.mockUsers.get(1);
+        User user2 = MockFirebaseApiClient.mockUsers.get(2);
+        User user3 = MockFirebaseApiClient.mockUsers.get(3);
         User user4 = new User("");
         user4.setName("Kanye West");
 
@@ -66,7 +67,7 @@ public class MessageListActivity extends AppCompatActivity {
                 "Do you see any Teletubbies in here? "));
 
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
-        for (MockChat chat : mockChats) {
+        for (final MockChat chat : mockChats) {
             View view = getLayoutInflater().inflate(R.layout.partial_message_item, container, false);
             ((ImageView) view.findViewById(R.id.image)).setImageResource(R.drawable.marina);
             ((TextView) view.findViewById(R.id.name)).setText(chat.user.getName());
@@ -75,8 +76,9 @@ public class MessageListActivity extends AppCompatActivity {
             view.findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "click?");
-                    startActivity(new Intent(MessageListActivity.this, ChatActivity.class));
+                    Intent intent = new Intent(MessageListActivity.this, ChatActivity.class);
+                    intent.putExtra("USER_ID", chat.user.getId());
+                    startActivity(intent);
                 }
             });
             container.addView(view);

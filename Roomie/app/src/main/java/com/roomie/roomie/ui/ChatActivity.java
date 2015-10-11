@@ -1,26 +1,52 @@
 package com.roomie.roomie.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
-import com.roomie.roomie.api.MagnetAPI;
+import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.FirebaseApiClient;
+import com.roomie.roomie.api.MagnetApi;
+import com.roomie.roomie.api.models.User;
 
 public class ChatActivity extends AppCompatActivity {
-    private static final String TAG = "MAIN";
-    private EditText recipientInput;
+    private static final String TAG = "CHAT";
+    private ScrollView scrollContainer;
     private LinearLayout container;
     private String username;
-    private MagnetAPI magnet = MagnetAPI.getInstance();
+    private String recipientId;
+    private FirebaseApi firebase = FirebaseApiClient.getInstance();
+    private MagnetApi magnet = MagnetApi.getInstance();
+    MMX.EventListener receiveMessageListener =
+            magnet.getEventListener(new Callback<String>() {
+                @Override
+                public void onResult(final String message) {
+                    firebase.onReceiveMessage(recipientId, message, new Callback<Boolean>() {
+                        @Override
+                        public void onResult(Boolean result) {
+                            if (result) {
+                                addMessageToChat(message, false);
+                            } else {
+                                Log.e(TAG, "Error saving message to chat. Dropping message");
+                            }
+                        }
+                    });
+
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +57,27 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Chat");
 
-        EditText usernameInput = (EditText) findViewById(R.id.username);
-        usernameInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
+        container = (LinearLayout) findViewById(R.id.container);
+
+        recipientId = getIntent().getStringExtra("USER_ID");
+
+        User recipient = new User(recipientId);
+        recipient.retrieve(new Callback<User>() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (!v.getText().toString().equals("")) {
-                    username = v.getText().toString();
-                    magnet.login(username, null);
-                }
-                Log.d(TAG, "enter");
-                return true;
+            public void onResult(User result) {
+                setTitle(result.getName());
+            }
+        });
+
+        firebase.getCurrentUser(new Callback<User>() {
+            @Override
+            public void onResult(User result) {
+                username = result.getId();
+                TextView textView = new TextView(ChatActivity.this);
+                textView.setText("username is " + username);
+                container.addView(textView);
+                // TODO(tony): Get message history.
             }
         });
 
@@ -68,20 +105,20 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        recipientInput = (EditText) findViewById(R.id.recipient);
-        container = (LinearLayout) findViewById(R.id.container);
+
     }
 
     private void sendMessage(final String messageText) {
-        magnet.sendMessage(username,
-                recipientInput.getText().toString(),
-                messageText,
-                new Callback<Boolean>() {
-                    @Override
-                    public void onResult(Boolean result) {
-                        addMessageToChat(messageText, true);
-                    }
-                });
+        firebase.sendMessage(recipientId, messageText, new Callback<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                if (result) {
+                    addMessageToChat(messageText, true);
+                } else {
+                    Log.e(TAG, "Message failed to send!");
+                }
+            }
+        });
     }
 
     private void addMessageToChat(final String message, final boolean currentUser) {
@@ -93,18 +130,11 @@ public class ChatActivity extends AppCompatActivity {
                 view.findViewById(R.id.image).setBackgroundResource(R.color.colorAccent);
                 ((TextView) view.findViewById(R.id.message)).setText(message);
                 container.addView(view);
+                scrollContainer.fullScroll(View.FOCUS_DOWN);
             }
         });
 
     }
-
-    MMX.EventListener receiveMessageListener =
-            magnet.getEventListener(new Callback<String>() {
-                @Override
-                public void onResult(String result) {
-                    addMessageToChat(result, false);
-                }
-            });
 
     @Override
     protected void onResume() {
@@ -118,4 +148,21 @@ public class ChatActivity extends AppCompatActivity {
         MMX.unregisterListener(receiveMessageListener);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_logout) {
+            firebase.logout();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

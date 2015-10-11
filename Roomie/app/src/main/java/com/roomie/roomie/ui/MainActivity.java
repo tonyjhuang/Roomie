@@ -11,8 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
@@ -136,6 +138,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        final ImageView userPicture = (ImageView) findViewById(R.id.user_pic);
+
         // Make sure we have a logged in user.
         firebaseApi.getCurrentUser(new Callback<User>() {
             @Override
@@ -145,8 +149,8 @@ public class MainActivity extends AppCompatActivity
                     Log.e(TAG, "Not logged in, not getting cards.");
                     return;
                 }
-
                 currentUser = result;
+                Glide.with(MainActivity.this).load(result.getProfilePicture()).into(userPicture);
                 // Retrieve potential matches from api, populate cardsAdapter.
                 firebaseApi.getPotentialMatches(searchPlace.getLatLng() ,new Callback<List<User>>() {
                     @Override

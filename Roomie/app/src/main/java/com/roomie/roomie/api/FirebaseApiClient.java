@@ -26,10 +26,11 @@ public class FirebaseApiClient implements FirebaseApi {
 
     public static Firebase firebase = new Firebase(FIREBASE_URL);
     public static GeoFire geofire = new GeoFire(firebase.child("locations"));
+    private MagnetApi magnet = MagnetApi.getInstance();
     private User currentUser;
     private AuthData authData;
 
-    private static FirebaseApiClient instance;
+    private static FirebaseApiClient instance = new FirebaseApiClient();
 
     private FirebaseApiClient() {
         // Check if we have a cached auth.
@@ -43,9 +44,6 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     public static FirebaseApiClient getInstance() {
-        if (instance == null) {
-            instance = new FirebaseApiClient();
-        }
         return instance;
     }
 
@@ -83,7 +81,7 @@ public class FirebaseApiClient implements FirebaseApi {
         });
     }
 
-    // Retrieve User information from Authdata.
+    // Retrieve User information from Authdata. Sets up currentUser and Magnet api client.
     private void setAuthData(AuthData authData) {
         this.authData = authData;
         User currentUser = null;
@@ -161,11 +159,18 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void sendMessage(String recipientId, String message, Callback<Boolean> callback) {
-
+        if(!isLoggedIn()) {
+            Log.e(TAG, "No user found, aborting message.");
+            callback.onResult(false);
+            return;
+        }
+        magnet.sendMessage(currentUser.getId(), recipientId, message, callback);
+        // TODO(tony): Save message to chat here.
     }
 
     @Override
     public void onReceiveMessage(String senderId, String message, Callback<Boolean> callback) {
-
+        // TODO(tony): Save message to chat here.
+        callback.onResult(true);
     }
 }

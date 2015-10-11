@@ -97,7 +97,7 @@ public class User {
     }
 
     public void reject(String noList) {
-        if (noList != this.id) {
+        if (!noList.equals(this.id)) {
             this.rejectList.add(noList);
             this.put();
         }
@@ -122,7 +122,7 @@ public class User {
     }
 
     public void accept(String id) {
-        if (id == this.getId()){
+        if (id.equals(this.getId())){
             return;
         }
         User userMatched = new User(id);

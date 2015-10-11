@@ -5,31 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main">
-
-    <EditText
-        android:id="@+id/username"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="username"
-        android:imeOptions="actionSend"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@+id/recipient"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/username"
-        android:hint="recipient"
-        android:imeOptions="actionDone"
-        android:inputType="text" />
+    tools:context=".ChatActivity"
+    tools:showIn="@layout/activity_chat">
 
     <ScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/input"
-        android:layout_below="@+id/recipient">
+        android:layout_above="@+id/input">
 
         <LinearLayout
             android:id="@+id/container"
@@ -38,7 +21,14 @@
             android:orientation="vertical" />
     </ScrollView>
 
+    <View android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@+id/divider"
+        android:background="@color/white" />
+
     <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_alignTop="@+id/input"
@@ -52,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/send"
-        android:gravity="bottom|left"
+        android:gravity="center_vertical|left"
         android:paddingLeft="16dp"
         android:hint="message"
         android:imeOptions="actionSend"
