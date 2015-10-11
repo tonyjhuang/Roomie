@@ -27,14 +27,14 @@ public class ChatActivity extends AppCompatActivity {
     private ScrollView scrollContainer;
     private LinearLayout container;
     private String username;
-    private String recipient;
+    private String recipientId;
     private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private MagnetApi magnet = MagnetApi.getInstance();
     MMX.EventListener receiveMessageListener =
             magnet.getEventListener(new Callback<String>() {
                 @Override
                 public void onResult(final String message) {
-                    firebase.onReceiveMessage(recipient, message, new Callback<Boolean>() {
+                    firebase.onReceiveMessage(recipientId, message, new Callback<Boolean>() {
                         @Override
                         public void onResult(Boolean result) {
                             if (result) {
@@ -55,11 +55,20 @@ public class ChatActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Chat");
 
         scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
         container = (LinearLayout) findViewById(R.id.container);
 
-        recipient = getIntent().getStringExtra("USER_ID");
+        recipientId = getIntent().getStringExtra("USER_ID");
+
+        User recipient = new User(recipientId);
+        recipient.retrieve(new Callback<User>() {
+            @Override
+            public void onResult(User result) {
+                setTitle(result.getName());
+            }
+        });
 
         firebase.getCurrentUser(new Callback<User>() {
             @Override
@@ -68,7 +77,6 @@ public class ChatActivity extends AppCompatActivity {
                 TextView textView = new TextView(ChatActivity.this);
                 textView.setText("username is " + username);
                 container.addView(textView);
-                setTitle(result.getName());
                 // TODO(tony): Get message history.
             }
         });
@@ -101,7 +109,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(final String messageText) {
-        firebase.sendMessage(recipient, messageText, new Callback<Boolean>() {
+        firebase.sendMessage(recipientId, messageText, new Callback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
                 if (result) {

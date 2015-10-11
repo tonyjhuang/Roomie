@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ChatActivity"
     tools:showIn="@layout/activity_chat">
 
@@ -41,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/send"
-        android:gravity="bottom|left"
+        android:gravity="center_vertical|left"
         android:paddingLeft="16dp"
         android:hint="message"
         android:imeOptions="actionSend"
