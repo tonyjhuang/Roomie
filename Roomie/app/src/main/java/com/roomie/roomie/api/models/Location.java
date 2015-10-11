@@ -28,7 +28,7 @@ public class Location {
     }
 
     public Location( String id, Place place ){
-        /* Pusher into the database */
+        /* Push into the database */
         this.setId(id, place.getAddress().toString());
         this.setLatLng(place.getLatLng());
         FirebaseApiClient.geofire.setLocation(this.id, this.latLng);

@@ -10,6 +10,7 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.roomie.roomie.api.models.Message;
 import com.roomie.roomie.api.models.User;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class FirebaseApiClient implements FirebaseApi {
     private MagnetApi magnet = MagnetApi.getInstance();
     private User currentUser;
     private AuthData authData;
+    private Message messageModel = new Message();
 
     private static FirebaseApiClient instance = new FirebaseApiClient();
 
@@ -158,12 +160,12 @@ public class FirebaseApiClient implements FirebaseApi {
             return;
         }
         magnet.sendMessage(currentUser.getId(), recipientId, message, callback);
-        // TODO(tony): Save message to chat here.
+        messageModel.sendMessage(currentUser.getId(), recipientId, message);
     }
 
     @Override
     public void onReceiveMessage(String senderId, String message, Callback<Boolean> callback) {
-        // TODO(tony): Save message to chat here.
+        messageModel.receiveMessage(currentUser.getId(), senderId, message);
         callback.onResult(true);
     }
 }
