@@ -114,6 +114,13 @@ public class User {
         return false;
     }
 
+    public boolean rejected(String id){
+        if (rejectList.contains(id)){
+            return true;
+        }
+        return false;
+    }
+
     public boolean isMatch(String id){
         if (matchesList.contains(id)){
             return true;

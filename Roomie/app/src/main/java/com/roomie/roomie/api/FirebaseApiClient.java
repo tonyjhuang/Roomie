@@ -5,8 +5,14 @@ import android.util.Log;
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.roomie.roomie.api.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +24,7 @@ public class FirebaseApiClient implements FirebaseApi {
     private static final String FIREBASE_URL = "https://theroomieapp.firebaseio.com";
 
     public static Firebase firebase = new Firebase(FIREBASE_URL);
+    public static GeoFire geofire = new GeoFire(firebase.child("locations"));
     private MagnetApi magnet = MagnetApi.getInstance();
     private User currentUser;
     private AuthData authData;
@@ -80,7 +87,7 @@ public class FirebaseApiClient implements FirebaseApi {
         if(authData != null) {
             final String userId = (String) authData.getProviderData().get("id");
             currentUser = new User(userId);
-            currentUser.setName((String) authData.getProviderData().get("displayName"));
+            currentUser.setName((authData.getProviderData().get("displayName").toString()));
             currentUser.setProfilePicture((String) authData.getProviderData().get("profileImageURL"));
             MagnetApi.getInstance().login(userId, new Callback<Boolean>() {
                 @Override
@@ -109,7 +116,37 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     @Override
-    public void getPotentialMatches(Callback<List<User>> callback) {
+    public void getPotentialMatches(LatLng latLng, final Callback<List<String>> callback) {
+        GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 30);
+        final List<String> listUserKeys = new ArrayList<String>();
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                listUserKeys.add(key.split("_")[0]);
+                //System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                System.out.println(String.format("Key %s is no longer in the search area", key));
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+                System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                callback.onResult(listUserKeys);
+                //System.out.println("All initial data has been loaded and events have been fired!");
+            }
+
+            @Override
+            public void onGeoQueryError(FirebaseError error) {
+                System.err.println("There was an error with this query: " + error);
+            }
+        });
 
     }
 

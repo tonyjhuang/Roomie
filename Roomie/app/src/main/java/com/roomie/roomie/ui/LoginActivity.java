@@ -173,6 +173,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+
         Log.d(TAG, "logged in? " + firebaseApi.isLoggedIn());
         supportInvalidateOptionsMenu();
         mAuthProgressDialog.hide();

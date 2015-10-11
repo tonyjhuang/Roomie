@@ -1,5 +1,8 @@
 package com.roomie.roomie.api;
 
+import android.telecom.Call;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.models.User;
 
@@ -20,7 +23,7 @@ public interface FirebaseApi {
 
     void getCurrentUser(Callback<User> callback);
 
-    void getPotentialMatches(Callback<List<User>> callback);
+    void getPotentialMatches(LatLng latLng, Callback<List<String>> callback);
 
     void sendMessage(String recipientId, String message, Callback<Boolean> callback);
 

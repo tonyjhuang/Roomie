@@ -25,10 +25,13 @@ import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.MockFirebaseApiClient;
+import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -42,12 +45,13 @@ public class MainActivity extends AppCompatActivity
      */
     protected GoogleApiClient googleApiClient;
 
-    private FirebaseApi firebaseApi = MockFirebaseApiClient.getInstance();
+    private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
 
     private CardsAdapter cardsAdapter;
 
     private User currentUser;
 
+    private LatLng currentlatLng;
     private boolean endOfUsers = false;
 
     @Override
@@ -75,9 +79,23 @@ public class MainActivity extends AppCompatActivity
         searchBox.setGoogleApiClient(googleApiClient);
         searchBox.setPlaceCallback(new Callback<Place>() {
             @Override
-            public void onResult(Place result) {
+            public void onResult(final Place place) {
+                /* User clicked on search result */
                 endOfUsers = false;
-                Log.d(TAG, getLatLng(result.getAddress().toString()).toString());
+                currentlatLng = place.getLatLng();
+                firebaseApi.getCurrentUser(new Callback<User>() {
+                    @Override
+                    public void onResult(User result) {
+                        new Location(result.getId(), place);
+                        firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<String>>() {
+                            @Override
+                            public void onResult(List<String> result) {
+                                RetrieveUsersToCreateCard(result);
+
+                            }
+                        });
+                    }
+                });
             }
         });
 
@@ -123,12 +141,15 @@ public class MainActivity extends AppCompatActivity
                 currentUser = result;
                 Glide.with(MainActivity.this).load(result.getProfilePicture()).into(userPicture);
                 // Retrieve potential matches from api, populate cardsAdapter.
-                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
-                    @Override
-                    public void onResult(List<User> result) {
-                        cardsAdapter.addUsers(result);
-                    }
-                });
+                if (currentlatLng != null){
+                    firebaseApi.getPotentialMatches(currentlatLng ,new Callback<List<String>>() {
+                        @Override
+                        public void onResult(List<String> result) {
+                            RetrieveUsersToCreateCard(result);
+                        }
+                    });
+                }
+
             }
         });
     }
@@ -168,34 +189,45 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onLeftCardExit(Object dataObject) {
-                User swipedUser = (User) dataObject;
-                //currentUser.reject(swipedUser.getId());
+                final User swipedUser = (User) dataObject;
+                firebaseApi.getCurrentUser(new Callback<User>() {
+                    @Override
+                    public void onResult(User result) {
+                        result.reject(swipedUser.getId());
+                    }
+                });
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                User swipedUser = (User) dataObject;
-                /*currentUser.accept(swipedUser.getId());
-                if (currentUser.isMatch(swipedUser.getId())) {
-                    onMatch(swipedUser.getId());
-                }*/
+                final User swipedUser = (User) dataObject;
+                firebaseApi.getCurrentUser(new Callback<User>() {
+                    @Override
+                    public void onResult(User result) {
+                        result.accept(swipedUser.getId());
+                        if (result.isMatch(swipedUser.getId())) {
+                            onMatch(swipedUser.getId());
+                        }
+                    }
+                });
             }
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
-                if (loading && !endOfUsers) return;
+                if ( !(!loading && !endOfUsers && !(currentlatLng == null))) return;
                 Log.d(TAG, "Loading more users.");
                 loading = true;
-                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+                firebaseApi.getPotentialMatches(currentlatLng,  new Callback<List<String>>() {
                     @Override
-                    public void onResult(List<User> result) {
+                    public void onResult(List<String> result) {
                         if(result.size() == 0) {
                             endOfUsers = true;
                         }
                         loading = false;
-                        cardsAdapter.addUsers(result);
+                        RetrieveUsersToCreateCard(result);
                     }
                 });
+
             }
         };
     }
@@ -236,5 +268,27 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void RetrieveUsersToCreateCard(List<String> result){
+        for (final String id: result){
+            firebaseApi.getCurrentUser(new Callback<User>() {
+                @Override
+                public void onResult(User result) {
+                    if (result.accepted(id) || result.rejected(id) || result.getId().equals(id)) return;
+
+                    User u = new User(id);
+                    u.retrieve(new Callback<User>() {
+                        @Override
+                        public void onResult(User result) {
+                            List<User> l = new ArrayList<>();
+                            l.add(result);
+                            cardsAdapter.addUsers(l);
+                        }
+                    });
+                }
+            });
+
+        }
     }
 }
