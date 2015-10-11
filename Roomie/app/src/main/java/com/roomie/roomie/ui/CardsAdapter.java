@@ -22,6 +22,11 @@ public class CardsAdapter extends BaseAdapter {
     private List<User> users = new ArrayList<>();
 
     public void addUsers(List<User> users) {
+        for (User u: users){
+            if (this.users.contains(u)){
+                users.remove(u);
+            }
+        }
         this.users.addAll(users);
         notifyDataSetChanged();
     }
