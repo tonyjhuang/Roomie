@@ -124,8 +124,9 @@ public class ChatActivity extends AppCompatActivity {
         firebase.sendMessage(recipient.getId(), messageText, new Callback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
+                addMessageToChat(messageText, true);
                 if (result) {
-                    addMessageToChat(messageText, true);
+                   // addMessageToChat(messageText, true);
                 } else {
                     Log.e(TAG, "Message failed to send!");
                 }

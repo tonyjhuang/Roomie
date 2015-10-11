@@ -1,5 +1,6 @@
 package com.roomie.roomie.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
+import com.roomie.roomie.api.FirebaseUtils;
 import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 import com.software.shell.fab.ActionButton;
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             @Override
                             public void onResult(List<String> result) {
                                 RetrieveUsersToCreateCard(result);
-
+                        closeKeyboard();
                             }
                         });
                     }
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cardsAdapter.getCount() != 0) {
+                if (cardsAdapter.getCount() != 0) {
                     cardsContainer.getTopCardListener().selectRight();
                 }
             }
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         rejectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(cardsAdapter.getCount() != 0) {
+                if (cardsAdapter.getCount() != 0) {
                     cardsContainer.getTopCardListener().selectLeft();
                 }
             }
@@ -152,6 +155,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }
         });
+    }
+
+    private void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(cardsContainer.getWindowToken(), 0);
     }
 
     private SwipeFlingAdapterView.onFlingListener getOnFlingListener(final CardsAdapter adapter) {
@@ -235,6 +243,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.action_profile) {
+            firebaseApi.resetData();
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_messages) {
             startActivity(new Intent(this, MessageListActivity.class));
@@ -245,26 +256,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void RetrieveUsersToCreateCard(List<String> result) {
-        for (final String id : result) {
-            firebaseApi.getCurrentUser(new Callback<User>() {
-                @Override
-                public void onResult(User result) {
-                    if (result.accepted(id) || result.rejected(id) || result.getId().equals(id))
-                        return;
-
-                    User u = new User(id);
-                    u.retrieve(new Callback<User>() {
-                        @Override
-                        public void onResult(User result) {
-                            List<User> l = new ArrayList<>();
-                            l.add(result);
-                            cardsAdapter.addUsers(l);
-                        }
-                    });
-                }
-            });
-
-        }
+        FirebaseUtils.retrieveUsers(result, new Callback<List<User>>() {
+            @Override
+            public void onResult(List<User> result) {
+                cardsAdapter.addUsers(result);
+            }
+        });
     }
 
 }
