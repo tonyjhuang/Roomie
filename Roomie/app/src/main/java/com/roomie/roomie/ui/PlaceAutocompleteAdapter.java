@@ -38,6 +38,7 @@ import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.roomie.roomie.R;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -126,6 +127,8 @@ public class PlaceAutocompleteAdapter
         TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
         textView1.setText(item.getPrimaryText(STYLE_BOLD));
         textView2.setText(item.getSecondaryText(STYLE_BOLD));
+        textView1.setTextColor(getContext().getResources().getColor(R.color.black));
+        textView2.setTextColor(getContext().getResources().getColor(R.color.gray));
 
         return row;
     }
