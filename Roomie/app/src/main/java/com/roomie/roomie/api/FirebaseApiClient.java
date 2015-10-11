@@ -10,7 +10,6 @@ import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class FirebaseApiClient implements FirebaseApi {
             currentUser = new User(userId);
             currentUser.setName((authData.getProviderData().get("displayName").toString()));
             currentUser.setProfilePicture((String) authData.getProviderData().get("profileImageURL"));
-            MagnetAPI.getInstance().login(userId, new Callback<Boolean>() {
+            MagnetApi.getInstance().login(userId, new Callback<Boolean>() {
                 @Override
                 public void onResult(Boolean result) {
                     Log.d(TAG, result ? "Logged into magnet with id: " + userId : "Couldn't login to Magnet");

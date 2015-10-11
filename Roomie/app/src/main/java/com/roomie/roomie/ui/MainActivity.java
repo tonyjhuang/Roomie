@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
 
     private User currentUser;
 
-    private Place searchPlace;
+    private LatLng currentlatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onResult(final Place place) {
                         Log.d(TAG, getLatLng(place.getAddress().toString()).toString());
-                        searchPlace = place;
+                        currentlatLng = place.getLatLng();
                         firebaseApi.getCurrentUser(new Callback<User>() {
                             @Override
                             public void onResult(User result) {
@@ -98,9 +98,7 @@ public class MainActivity extends AppCompatActivity
                                 firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<User>>() {
                                     @Override
                                     public void onResult(List<User> result) {
-                                        for (User u : result){
-                                            System.out.println(">>>>>>" + u.getName());
-                                        }
+                                        cardsAdapter.addUsers(result);
                                     }
                                 });
                             }
@@ -152,12 +150,15 @@ public class MainActivity extends AppCompatActivity
                 currentUser = result;
                 Glide.with(MainActivity.this).load(result.getProfilePicture()).into(userPicture);
                 // Retrieve potential matches from api, populate cardsAdapter.
-                firebaseApi.getPotentialMatches(searchPlace.getLatLng() ,new Callback<List<User>>() {
-                    @Override
-                    public void onResult(List<User> result) {
-                        cardsAdapter.addUsers(result);
-                    }
-                });
+                if (currentlatLng != null){
+                    firebaseApi.getPotentialMatches(currentlatLng ,new Callback<List<User>>() {
+                        @Override
+                        public void onResult(List<User> result) {
+                            cardsAdapter.addUsers(result);
+                        }
+                    });
+                }
+
             }
         });
     }
@@ -213,9 +214,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
                 Log.d(TAG, "almost empty!");
-                if (loading || searchPlace == null) return;
+                if (loading || currentlatLng == null) return;
                 loading = true;
-                firebaseApi.getPotentialMatches(searchPlace.getLatLng(),  new Callback<List<User>>() {
+                firebaseApi.getPotentialMatches(currentlatLng,  new Callback<List<User>>() {
                     @Override
                     public void onResult(List<User> result) {
                         loading = false;
