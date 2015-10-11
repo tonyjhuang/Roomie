@@ -27,10 +27,10 @@ public class Location {
         this.id = id + '_'+ placeName;
     }
 
-    public Location( String id, Place place ){
+    public Location( String id, LatLng latLng, String address ){
         /* Push into the database */
-        this.setId(id, place.getAddress().toString());
-        this.setLatLng(place.getLatLng());
+        this.setId(id, address);
+        this.setLatLng(latLng);
         FirebaseApiClient.geofire.setLocation(this.id, this.latLng);
     }
 
