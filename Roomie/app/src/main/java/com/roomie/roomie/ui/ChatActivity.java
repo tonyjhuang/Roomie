@@ -30,6 +30,23 @@ public class ChatActivity extends AppCompatActivity {
     private String recipient;
     private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private MagnetApi magnet = MagnetApi.getInstance();
+    MMX.EventListener receiveMessageListener =
+            magnet.getEventListener(new Callback<String>() {
+                @Override
+                public void onResult(final String message) {
+                    firebase.onReceiveMessage(recipient, message, new Callback<Boolean>() {
+                        @Override
+                        public void onResult(Boolean result) {
+                            if (result) {
+                                addMessageToChat(message, false);
+                            } else {
+                                Log.e(TAG, "Error saving message to chat. Dropping message");
+                            }
+                        }
+                    });
+
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +55,6 @@ public class ChatActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Chat");
 
         scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
         container = (LinearLayout) findViewById(R.id.container);
@@ -52,6 +68,7 @@ public class ChatActivity extends AppCompatActivity {
                 TextView textView = new TextView(ChatActivity.this);
                 textView.setText("username is " + username);
                 container.addView(textView);
+                setTitle(result.getName());
                 // TODO(tony): Get message history.
             }
         });
@@ -79,13 +96,15 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d(TAG, "send");
             }
         });
+
+
     }
 
     private void sendMessage(final String messageText) {
         firebase.sendMessage(recipient, messageText, new Callback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
-                if(result) {
+                if (result) {
                     addMessageToChat(messageText, true);
                 } else {
                     Log.e(TAG, "Message failed to send!");
@@ -108,24 +127,6 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-    MMX.EventListener receiveMessageListener =
-            magnet.getEventListener(new Callback<String>() {
-                @Override
-                public void onResult(final String message) {
-                    firebase.onReceiveMessage(recipient, message, new Callback<Boolean>() {
-                        @Override
-                        public void onResult(Boolean result) {
-                            if(result) {
-                                addMessageToChat(message, false);
-                            } else {
-                                Log.e(TAG, "Error saving message to chat. Dropping message");
-                            }
-                        }
-                    });
-
-                }
-            });
-
 
     @Override
     protected void onResume() {
