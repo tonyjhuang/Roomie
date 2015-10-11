@@ -1,15 +1,11 @@
 package com.roomie.roomie.api.models;
 
-import android.telecom.Call;
-
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.firebase.geofire.core.GeoHash;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApiClient;
-import com.roomie.roomie.ui.Autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -99,23 +99,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
 
-        ActionButton acceptButton = (ActionButton) findViewById(R.id.accept);
-        acceptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "swipe right)");
-                cardsContainer.getTopCardListener().selectRight();
-            }
-        });
-        ActionButton rejectButton = (ActionButton) findViewById(R.id.reject);
-        rejectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "swipe right)");
-                cardsContainer.getTopCardListener().selectLeft();
-            }
-        });
-
         // Setup swipeable cards.
         cardsAdapter = new CardsAdapter();
         cardsContainer.setAdapter(cardsAdapter);
@@ -126,6 +109,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
                 Log.d(TAG, "clock");
+            }
+        });
+
+        ActionButton acceptButton = (ActionButton) findViewById(R.id.accept);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cardsAdapter.getCount() != 0) {
+                    cardsContainer.getTopCardListener().selectRight();
+                }
+            }
+        });
+        ActionButton rejectButton = (ActionButton) findViewById(R.id.reject);
+        rejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cardsAdapter.getCount() != 0) {
+                    cardsContainer.getTopCardListener().selectLeft();
+                }
             }
         });
 

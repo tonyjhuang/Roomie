@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class FirebaseUtils {
 
-
     public static void retrieveUsers(List<String> ids, Callback<List<User>> callback) {
         new RetrieveUserTask(ids, callback).execute();
     }

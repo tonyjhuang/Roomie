@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
     <item
+        android:id="@+id/action_profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_face_black_48dp"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_messages"
         android:title="Messages"
         android:icon="@drawable/ic_chat_white_48dp"

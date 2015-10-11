@@ -8,6 +8,7 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
+        android:scaleType="centerCrop"
         android:layout_width="36dp"
         android:layout_height="36dp" />
 
