@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void onMatch(String matchedUserId) {
         Log.d(TAG, "LUCKY YOU! YOU GOT A MATCH!!!");
+        Toast.makeText(this, "It's a match! Go to messages to get talking.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
