@@ -3,6 +3,7 @@ package com.roomie.roomie.api.models;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
@@ -52,7 +53,7 @@ public class Message {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot id : snapshot.getChildren()) {
-                    ret.add( (HashMap<String, String>) id.getValue());
+                    ret.add((HashMap<String, String>) id.getValue());
                 }
                 callback.onResult(ret);
             }
@@ -60,6 +61,28 @@ public class Message {
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+    }
+
+    public void getLastMessage(String currentUserId, String recipient, final Callback<String> callback){
+        Firebase users_dir = FirebaseApiClient.firebase.child("users");
+        Firebase message_dir = users_dir.child(currentUserId).child("messages").child(recipient);
+        message_dir.addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot snapshot) {
+                GenericTypeIndicator<List<HashMap>> t = new GenericTypeIndicator<List<HashMap>>() {};
+                List<HashMap> messages = snapshot.getValue(t);
+                if( messages == null ) {
+                    System.out.println("No messages");
+                }
+                else {
+                    callback.onResult( messages.get(messages.size() - 1).get("message").toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                
             }
         });
     }
