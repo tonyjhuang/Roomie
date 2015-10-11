@@ -71,7 +71,7 @@ public class CardsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.name.setText(user.getName());
+        holder.name.setText(user.getName() + ", " + user.getAge());
         Glide.with(parent.getContext()).load(user.getProfilePicture()).into(holder.imageView);
 
         // Create stack effect.

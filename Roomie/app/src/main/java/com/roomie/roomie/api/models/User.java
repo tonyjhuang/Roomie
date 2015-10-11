@@ -9,6 +9,7 @@ import com.roomie.roomie.api.FirebaseApiClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by tonyjhuang on 10/10/15.
@@ -152,6 +153,10 @@ public class User {
 
     public List<String> getMatches() {
         return matchesList;
+    }
+
+    public int getAge() {
+        return new Random().nextInt(20) + 18;
     }
 
     private String id;
