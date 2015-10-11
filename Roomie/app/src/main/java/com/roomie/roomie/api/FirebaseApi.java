@@ -23,7 +23,7 @@ public interface FirebaseApi {
 
     void getCurrentUser(Callback<User> callback);
 
-    void getPotentialMatches(LatLng latLng, Callback<List<User>> callback);
+    void getPotentialMatches(LatLng latLng, Callback<List<String>> callback);
 
     void sendMessage(String recipientId, String message, Callback<Boolean> callback);
 

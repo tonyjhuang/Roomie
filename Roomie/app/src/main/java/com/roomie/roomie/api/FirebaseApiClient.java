@@ -116,19 +116,13 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     @Override
-    public void getPotentialMatches(LatLng latLng, final Callback<List<User>> callback) {
+    public void getPotentialMatches(LatLng latLng, final Callback<List<String>> callback) {
         GeoQuery geoQuery = geofire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 30);
-        final List<User> listUser = new ArrayList<User>();
+        final List<String> listUserKeys = new ArrayList<String>();
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                User user = new User(key.split("_")[0]);
-                user.retrieve(new Callback<User>() {
-                    @Override
-                    public void onResult(User result) {
-                        listUser.add(result);
-                    }
-                });
+                listUserKeys.add(key.split("_")[0]);
                 //System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
             }
 
@@ -144,7 +138,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
             @Override
             public void onGeoQueryReady() {
-                callback.onResult(listUser);
+                callback.onResult(listUserKeys);
                 //System.out.println("All initial data has been loaded and events have been fired!");
             }
 
