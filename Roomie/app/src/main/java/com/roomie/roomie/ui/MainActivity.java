@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity
 
     private User currentUser;
 
+    private boolean endOfUsers = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity
                 googleApiClient, autocompleteAdapter, new Callback<Place>() {
                     @Override
                     public void onResult(Place place) {
+                        endOfUsers = false;
                         Log.d(TAG, getLatLng(place.getAddress().toString()).toString());
                     }
                 }));
@@ -193,12 +196,15 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
-                Log.d(TAG, "almost empty!");
-                if (loading) return;
+                if (loading && !endOfUsers) return;
+                Log.d(TAG, "Loading more users.");
                 loading = true;
                 firebaseApi.getPotentialMatches(new Callback<List<User>>() {
                     @Override
                     public void onResult(List<User> result) {
+                        if(result.size() == 0) {
+                            endOfUsers = true;
+                        }
                         loading = false;
                         cardsAdapter.addUsers(result);
                     }
