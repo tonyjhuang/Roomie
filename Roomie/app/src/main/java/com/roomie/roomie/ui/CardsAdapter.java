@@ -1,5 +1,6 @@
 package com.roomie.roomie.ui;
 
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +68,12 @@ public class CardsAdapter extends BaseAdapter {
 
         holder.name.setText(user.getName());
         Glide.with(parent.getContext()).load(user.getProfilePicture()).into(holder.imageView);
-        convertView.setTranslationY(position * 10);
+
+        // Create stack effect.
+        convertView.setTranslationY(position * 5);
+        convertView.setScaleX(1f + (position * .01f));
+        convertView.setScaleY(1f + (position * .01f));
+        holder.cardView.setCardElevation(getCount() - position + 1);
         return convertView;
     }
 
@@ -84,10 +90,12 @@ public class CardsAdapter extends BaseAdapter {
     private static class ViewHolder {
         public TextView name;
         public ImageView imageView;
+        public CardView cardView;
 
         public ViewHolder(View view) {
             name = (TextView) view.findViewById(R.id.name);
             imageView = (ImageView) view.findViewById(R.id.image);
+            cardView = (CardView) view.findViewById(R.id.card_container);
         }
     }
 }

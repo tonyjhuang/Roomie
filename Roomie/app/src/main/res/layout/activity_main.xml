@@ -55,7 +55,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            app:max_visible="2"
+            app:max_visible="4"
             app:min_adapter_stack="1000"
             app:rotation_degrees="16" />
 

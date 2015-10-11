@@ -22,6 +22,7 @@ import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
+import com.roomie.roomie.api.MockFirebaseApiClient;
 import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 import com.software.shell.fab.ActionButton;
@@ -39,13 +40,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     protected GoogleApiClient googleApiClient;
 
-    private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
+    private FirebaseApi firebaseApi = MockFirebaseApiClient.getInstance();
 
     private CardsAdapter cardsAdapter;
 
     private User currentUser;
 
     private LatLng currentlatLng;
+
+    private SwipeFlingAdapterView cardsContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+        cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
 
         ActionButton acceptButton = (ActionButton) findViewById(R.id.accept);
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
                 adapter.remove(0);
+                cardsContainer.invalidate();
             }
 
             @Override
