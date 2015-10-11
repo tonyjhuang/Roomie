@@ -227,19 +227,17 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
-                if ( !(!loading && !endOfUsers && !(currentlatLng == null))) return;
-                Log.d(TAG, "Loading more users.");
-                loading = true;
-                firebaseApi.getPotentialMatches(currentlatLng,  new Callback<List<String>>() {
-                    @Override
-                    public void onResult(List<String> result) {
-                        if(result.size() == 0) {
-                            endOfUsers = true;
-                        }
-                        loading = false;
-                        RetrieveUsersToCreateCard(result);
-                    }
-                });
+//                if ( !(!loading && !endOfUsers && !(currentlatLng == null))) return;
+//                Log.d(TAG, "Loading more users.");
+//                loading = true;
+//                firebaseApi.getPotentialMatches(currentlatLng,  new Callback<List<String>>() {
+//                    @Override
+//                    public void onResult(List<String> result) {
+//                            endOfUsers = true;
+//                        loading = false;
+//                        RetrieveUsersToCreateCard(result);
+//                    }
+//                });
 
             }
         };
