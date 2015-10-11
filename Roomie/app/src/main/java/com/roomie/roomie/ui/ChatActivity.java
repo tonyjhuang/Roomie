@@ -10,10 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
@@ -30,8 +32,8 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "CHAT";
     private ScrollView scrollContainer;
     private LinearLayout container;
-    private String username;
-    private String recipientId;
+    private User currentUser;
+    private User recipient;
     private FirebaseApi firebase = FirebaseApiClient.getInstance();
     private MagnetApi magnet = MagnetApi.getInstance();
 
@@ -39,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
             magnet.getEventListener(new Callback<String>() {
                 @Override
                 public void onResult(final String message) {
-                    firebase.onReceiveMessage(recipientId, message, new Callback<Boolean>() {
+                    firebase.onReceiveMessage(recipient.getId(), message, new Callback<Boolean>() {
                         @Override
                         public void onResult(Boolean result) {
                             if (result) {
@@ -65,9 +67,7 @@ public class ChatActivity extends AppCompatActivity {
         scrollContainer = (ScrollView) findViewById(R.id.scroll_container);
         container = (LinearLayout) findViewById(R.id.container);
 
-        recipientId = getIntent().getStringExtra("USER_ID");
-
-        User recipient = new User(recipientId);
+        final User recipient = new User(getIntent().getStringExtra("USER_ID"));
         recipient.retrieve(new Callback<User>() {
             @Override
             public void onResult(User result) {
@@ -78,16 +78,12 @@ public class ChatActivity extends AppCompatActivity {
         firebase.getCurrentUser(new Callback<User>() {
             @Override
             public void onResult(User result) {
-                username = result.getId();
-                TextView textView = new TextView(ChatActivity.this);
-                textView.setText("username is " + username);
-                container.addView(textView);
-                // TODO(tony): Get message history.
+                currentUser = result;
                 Message message = new Message();
-                message.getMessageHistory(username, recipientId, new Callback<List<HashMap<String,String>>>() {
+                message.getMessageHistory(currentUser.getId(), recipient.getId(), new Callback<List<HashMap<String, String>>>() {
                     @Override
                     public void onResult(List<HashMap<String, String>> result) {
-                        for (HashMap<String,String> r : result){
+                        for (HashMap<String, String> r : result) {
                             addMessageToChat(r.get("message"), r.get("sentByAuthor").equals("true"));
                         }
                     }
@@ -124,7 +120,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(final String messageText) {
-        firebase.sendMessage(recipientId, messageText, new Callback<Boolean>() {
+        firebase.sendMessage(recipient.getId(), messageText, new Callback<Boolean>() {
             @Override
             public void onResult(Boolean result) {
                 if (result) {
@@ -136,13 +132,17 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void addMessageToChat(final String message, final boolean currentUser) {
+    private void addMessageToChat(final String message, final boolean isCurrentUser) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int layout = currentUser ? R.layout.partial_chat_item_rtl : R.layout.partial_chat_item;
+                int layout = isCurrentUser ? R.layout.partial_chat_item_rtl : R.layout.partial_chat_item;
+                String profilePicture = isCurrentUser ?
+                        currentUser.getProfilePicture() : recipient.getProfilePicture();
                 View view = getLayoutInflater().inflate(layout, container, false);
-                view.findViewById(R.id.image).setBackgroundResource(R.color.colorAccent);
+                Glide.with(ChatActivity.this).load(profilePicture)
+                        .centerCrop()
+                        .into((ImageView) view.findViewById(R.id.image));
                 ((TextView) view.findViewById(R.id.message)).setText(message);
                 container.addView(view);
                 scrollContainer.fullScroll(View.FOCUS_DOWN);
