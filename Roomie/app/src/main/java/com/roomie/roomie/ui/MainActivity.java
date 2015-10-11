@@ -258,8 +258,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void RetrieveUsersToCreateCard(List<String> result) {
         FirebaseUtils.retrieveUsers(result, new Callback<List<User>>() {
             @Override
-            public void onResult(List<User> result) {
-                cardsAdapter.addUsers(result);
+            public void onResult(final List<User> potentialMatches) {
+                firebaseApi.getCurrentUser(new Callback<User>() {
+                    @Override
+                    public void onResult(User currentUser) {
+                        // Filter out users that we've already seen
+                        List<User> potentialMatchesCopy = new ArrayList<User>(potentialMatches);
+                        for(User p: potentialMatches) {
+                            if(currentUser.isMatch(p.getId()) ||
+                                    currentUser.getId().equals(p.getId()) ||
+                                    currentUser.accepted(p.getId()) ||
+                                    currentUser.rejected(p.getId())) {
+                                potentialMatchesCopy.remove(p);
+                            }
+                         }
+                        cardsAdapter.addUsers(potentialMatchesCopy);
+                    }
+                });
+
             }
         });
     }

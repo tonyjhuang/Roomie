@@ -70,8 +70,13 @@ public class ChatActivity extends AppCompatActivity {
         recipient = new User(getIntent().getStringExtra("USER_ID"));
         recipient.retrieve(new Callback<User>() {
             @Override
-            public void onResult(User result) {
-                setTitle(result.getName());
+            public void onResult(final User result) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSupportActionBar().setTitle(result.getName());
+                    }
+                });
             }
         });
 
