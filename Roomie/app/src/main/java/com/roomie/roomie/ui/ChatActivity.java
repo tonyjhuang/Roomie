@@ -20,7 +20,11 @@ import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.MagnetApi;
+import com.roomie.roomie.api.models.Message;
 import com.roomie.roomie.api.models.User;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "CHAT";
@@ -78,6 +82,16 @@ public class ChatActivity extends AppCompatActivity {
                 textView.setText("username is " + username);
                 container.addView(textView);
                 // TODO(tony): Get message history.
+                Message message = new Message();
+                message.getMessageHistory(username, recipientId, new Callback<List<HashMap<String,String>>>() {
+                    @Override
+                    public void onResult(List<HashMap<String, String>> result) {
+                        for (HashMap<String,String> r : result){
+                            addMessageToChat(r.get("message"), r.get("sentByAuthor").equals("true"));
+                        }
+                    }
+                });
+
             }
         });
 

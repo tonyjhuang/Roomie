@@ -165,6 +165,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void onReceiveMessage(String senderId, String message, Callback<Boolean> callback) {
+        Log.d(TAG, "RECEIVING MESSAGE!!!!");
         messageModel.receiveMessage(currentUser.getId(), senderId, message);
         callback.onResult(true);
     }
