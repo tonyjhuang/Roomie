@@ -2,54 +2,64 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="24dp"
+    android:layout_width="280dp"
+    android:layout_height="320dp"
+    android:layout_gravity="bottom|center_horizontal"
+    android:layout_marginBottom="116dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     card_view:cardElevation="1dp"
     card_view:cardUseCompatPadding="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/info"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:alpha=".87"
-            android:gravity="center_vertical"
-            android:minHeight="48dp"
-            android:padding="8dp"
-            android:textColor="@android:color/black"
-            android:textSize="26sp"
-            tools:text="hello world" />
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/image"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/image"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/marina" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:alpha=".87"
+                android:padding="16dp"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                tools:text="Tony, 21, M" />
+        </LinearLayout>
+
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/info"
-            android:scaleType="centerCrop" />
+            android:layout_height="1px"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/LightSlateGray" />
 
-        <View
-            android:id="@+id/item_swipe_left_indicator"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_margin="10dp"
-            android:alpha="0"
-            android:background="#A5F" />
 
-        <View
-            android:id="@+id/item_swipe_right_indicator"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="right"
-            android:layout_margin="10dp"
-            android:alpha="0"
-            android:background="#5AF" />
+        <TextView
+            android:id="@+id/bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/bio"
+            android:textSize="16sp"
+            tools:text="@string/bio" />
 
-    </RelativeLayout>
+
+    </LinearLayout>
 </android.support.v7.widget.CardView>

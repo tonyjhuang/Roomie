@@ -1,8 +1,7 @@
 package com.roomie.roomie.ui;
 
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,32 +9,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
 import com.roomie.roomie.api.FirebaseApiClient;
-import com.roomie.roomie.api.MockFirebaseApiClient;
 import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
+import com.software.shell.fab.ActionButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
 
@@ -52,7 +46,6 @@ public class MainActivity extends AppCompatActivity
     private User currentUser;
 
     private LatLng currentlatLng;
-    private boolean endOfUsers = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +64,11 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        getSupportActionBar().setTitle("");
+
+        TextView appName = (TextView) findViewById(R.id.app_name);
+        Typeface font = Typeface.createFromAsset(getAssets(), "Montserrat-Bold.ttf");
+        appName.setTypeface(font);
 
         SearchBox searchBox = (SearchBox) findViewById(R.id.searchbox);
         searchBox.setGoogleApiClient(googleApiClient);
@@ -81,7 +76,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResult(final Place place) {
                 /* User clicked on search result */
-                endOfUsers = false;
                 currentlatLng = place.getLatLng();
                 firebaseApi.getCurrentUser(new Callback<User>() {
                     @Override
@@ -99,8 +93,26 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Setup swipeable cards.
         final SwipeFlingAdapterView cardsContainer = (SwipeFlingAdapterView) findViewById(R.id.cards);
+
+        ActionButton acceptButton = (ActionButton) findViewById(R.id.accept);
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "swipe right)");
+                cardsContainer.getTopCardListener().selectRight();
+            }
+        });
+        ActionButton rejectButton = (ActionButton) findViewById(R.id.reject);
+        rejectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "swipe right)");
+                cardsContainer.getTopCardListener().selectLeft();
+            }
+        });
+
+        // Setup swipeable cards.
         cardsAdapter = new CardsAdapter();
         cardsContainer.setAdapter(cardsAdapter);
         cardsContainer.setFlingListener(getOnFlingListener(cardsAdapter));
@@ -113,22 +125,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Buttons to control cards.
-        findViewById(R.id.accept).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cardsContainer.getTopCardListener().selectRight();
-            }
-        });
-        findViewById(R.id.reject).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cardsContainer.getTopCardListener().selectLeft();
-            }
-        });
-
-        final ImageView userPicture = (ImageView) findViewById(R.id.user_pic);
-
         // Make sure we have a logged in user.
         firebaseApi.getCurrentUser(new Callback<User>() {
             @Override
@@ -139,35 +135,17 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
                 currentUser = result;
-                Glide.with(MainActivity.this).load(result.getProfilePicture()).into(userPicture);
                 // Retrieve potential matches from api, populate cardsAdapter.
-                if (currentlatLng != null){
-                    firebaseApi.getPotentialMatches(currentlatLng ,new Callback<List<String>>() {
+                if (currentlatLng != null) {
+                    firebaseApi.getPotentialMatches(currentlatLng, new Callback<List<String>>() {
                         @Override
                         public void onResult(List<String> result) {
                             RetrieveUsersToCreateCard(result);
                         }
                     });
                 }
-
             }
         });
-    }
-
-    private LatLng getLatLng(String location) {
-        Geocoder coder = new Geocoder(this);
-        try {
-            List<Address> addressList = coder.getFromLocationName(location, 1);
-            if (addressList.size() != 0) {
-                return new LatLng(
-                        addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
-            Log.e("Main", e.getMessage());
-            return null;
-        }
     }
 
     private SwipeFlingAdapterView.onFlingListener getOnFlingListener(final CardsAdapter adapter) {
@@ -214,17 +192,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
-//                if ( !(!loading && !endOfUsers && !(currentlatLng == null))) return;
-//                Log.d(TAG, "Loading more users.");
-//                loading = true;
-//                firebaseApi.getPotentialMatches(currentlatLng,  new Callback<List<String>>() {
-//                    @Override
-//                    public void onResult(List<String> result) {
-//                            endOfUsers = true;
-//                        loading = false;
-//                        RetrieveUsersToCreateCard(result);
-//                    }
-//                });
 
             }
         };
@@ -268,12 +235,13 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void RetrieveUsersToCreateCard(List<String> result){
-        for (final String id: result){
+    private void RetrieveUsersToCreateCard(List<String> result) {
+        for (final String id : result) {
             firebaseApi.getCurrentUser(new Callback<User>() {
                 @Override
                 public void onResult(User result) {
-                    if (result.accepted(id) || result.rejected(id) || result.getId().equals(id)) return;
+                    if (result.accepted(id) || result.rejected(id) || result.getId().equals(id))
+                        return;
 
                     User u = new User(id);
                     u.retrieve(new Callback<User>() {
@@ -289,4 +257,5 @@ public class MainActivity extends AppCompatActivity
 
         }
     }
+
 }

@@ -4,71 +4,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/FloralWhite"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:background="?attr/colorPrimary"
-                    android:gravity="center_horizontal|top"
-                    android:minHeight="?android:attr/actionBarSize"
-                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/app_name"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="32sp" />
+        </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="8dp"
-                    android:text="@string/app_name"
-                    android:textSize="20sp" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/user_pic"
-                    app:civ_border_width="2px"
-                    app:civ_border_color="#AFFF"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/marina" />
+    </android.support.design.widget.AppBarLayout>
 
-                <com.roomie.roomie.ui.SearchBox
-                    android:id="@+id/searchbox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/toolbar"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/concrete_seamless"
+        android:paddingTop="48dp"
+        android:tileMode="repeat"
+        tools:context="com.roomie.roomie.ui.MainActivity">
 
-            </RelativeLayout>
 
-        </android.support.design.widget.AppBarLayout>
-
-        <include
-            layout="@layout/content_main"
+        <com.lorentzos.flingswipe.SwipeFlingAdapterView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cards"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/app_bar_layout" />
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:max_visible="2"
+            app:min_adapter_stack="1000"
+            app:rotation_degrees="16" />
+
+        <com.roomie.roomie.ui.SearchBox
+            android:id="@+id/searchbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp" />
+
+        <Space
+            android:id="@+id/center_anchor"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerHorizontal="true" />
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/reject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_toLeftOf="@+id/center_anchor"
+            app:button_color="@color/white"
+            app:button_colorPressed="#EFFF"
+            app:image="@drawable/ic_thumb_down_white_48dp"
+            app:type="BIG" />
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_toRightOf="@+id/center_anchor"
+            app:button_color="@color/white"
+            app:button_colorPressed="#EFFF"
+            app:image="@drawable/ic_thumb_up_white_48dp"
+            app:type="BIG" />
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
+

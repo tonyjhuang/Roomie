@@ -5,6 +5,6 @@
     <item
         android:id="@+id/action_messages"
         android:title="Messages"
-        android:icon="@drawable/ic_chat_bubble_black_48dp"
+        android:icon="@drawable/ic_chat_white_48dp"
         app:showAsAction="always" />
 </menu>

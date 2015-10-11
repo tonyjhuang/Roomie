@@ -1,9 +1,11 @@
 package com.roomie.roomie.ui;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,6 +20,8 @@ import java.util.List;
  * Created by tonyjhuang on 10/10/15.
  */
 public class CardsAdapter extends BaseAdapter {
+
+    private static final String TAG = "CARDS";
 
     private List<User> users = new ArrayList<>();
 
@@ -61,24 +65,28 @@ public class CardsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.info.setText(user.getName());
+        holder.name.setText(user.getName());
         Glide.with(parent.getContext()).load(user.getProfilePicture()).into(holder.imageView);
-
+        convertView.setTranslationY(position * 10);
         return convertView;
     }
 
     public User remove(int position) {
-        User removed = users.remove(position);
-        notifyDataSetChanged();
-        return removed;
+        if(position < users.size()) {
+            User removed = users.remove(position);
+            notifyDataSetChanged();
+            return removed;
+        } else {
+            return null;
+        }
     }
 
     private static class ViewHolder {
-        public TextView info;
+        public TextView name;
         public ImageView imageView;
 
         public ViewHolder(View view) {
-            info = (TextView) view.findViewById(R.id.info);
+            name = (TextView) view.findViewById(R.id.name);
             imageView = (ImageView) view.findViewById(R.id.image);
         }
     }
