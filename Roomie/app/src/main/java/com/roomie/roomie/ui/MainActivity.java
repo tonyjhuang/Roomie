@@ -23,7 +23,9 @@ import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
 import com.roomie.roomie.api.FirebaseApi;
+import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.MockFirebaseApiClient;
+import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
 
 import java.io.IOException;
@@ -42,11 +44,13 @@ public class MainActivity extends AppCompatActivity
      */
     protected GoogleApiClient googleApiClient;
 
-    private FirebaseApi firebaseApi = MockFirebaseApiClient.getInstance();
+    private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
 
     private CardsAdapter cardsAdapter;
 
     private User currentUser;
+
+    private Place searchPlace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +86,23 @@ public class MainActivity extends AppCompatActivity
         autoCompleteTextView.setOnItemClickListener(Autocomplete.getClickListener(
                 googleApiClient, autocompleteAdapter, new Callback<Place>() {
                     @Override
-                    public void onResult(Place place) {
+                    public void onResult(final Place place) {
                         Log.d(TAG, getLatLng(place.getAddress().toString()).toString());
+                        searchPlace = place;
+                        firebaseApi.getCurrentUser(new Callback<User>() {
+                            @Override
+                            public void onResult(User result) {
+                                new Location(result.getId(), place);
+                                firebaseApi.getPotentialMatches(place.getLatLng(), new Callback<List<User>>() {
+                                    @Override
+                                    public void onResult(List<User> result) {
+                                        for (User u : result){
+                                            System.out.println(">>>>>>" + u.getName());
+                                        }
+                                    }
+                                });
+                            }
+                        });
                     }
                 }));
 
@@ -129,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 
                 currentUser = result;
                 // Retrieve potential matches from api, populate cardsAdapter.
-                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+                firebaseApi.getPotentialMatches(searchPlace.getLatLng() ,new Callback<List<User>>() {
                     @Override
                     public void onResult(List<User> result) {
                         cardsAdapter.addUsers(result);
@@ -190,15 +209,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
                 Log.d(TAG, "almost empty!");
-                if (loading) return;
+                if (loading || searchPlace == null) return;
                 loading = true;
-                firebaseApi.getPotentialMatches(new Callback<List<User>>() {
+                firebaseApi.getPotentialMatches(searchPlace.getLatLng(),  new Callback<List<User>>() {
                     @Override
                     public void onResult(List<User> result) {
                         loading = false;
                         cardsAdapter.addUsers(result);
                     }
                 });
+
             }
         };
     }

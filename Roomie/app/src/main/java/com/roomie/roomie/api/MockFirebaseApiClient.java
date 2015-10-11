@@ -1,5 +1,6 @@
 package com.roomie.roomie.api;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.roomie.roomie.api.models.User;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class MockFirebaseApiClient implements FirebaseApi {
     }
 
     @Override
-    public void getPotentialMatches(Callback<List<User>> callback) {
+    public void getPotentialMatches(LatLng latLng, Callback<List<User>> callback) {
         callback.onResult(mockUsers);
     }
 

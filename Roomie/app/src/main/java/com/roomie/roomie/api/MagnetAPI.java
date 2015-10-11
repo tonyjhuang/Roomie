@@ -13,19 +13,19 @@ import java.util.Map;
 /**
  * Created by tonyjhuang on 10/10/15.
  */
-public class MagnetApi {
+public class MagnetAPI {
     private static final String TAG = "Magnet";
     private static final byte[] PASSWORD = "password".getBytes();
     private static boolean loggedIn = false;
 
-    private static MagnetApi instance;
+    private static MagnetAPI instance;
 
-    private MagnetApi() {
+    private MagnetAPI() {
     }
 
-    public static MagnetApi getInstance() {
+    public static MagnetAPI getInstance() {
         if (instance == null) {
-            instance = new MagnetApi();
+            instance = new MagnetAPI();
         }
         return instance;
     }

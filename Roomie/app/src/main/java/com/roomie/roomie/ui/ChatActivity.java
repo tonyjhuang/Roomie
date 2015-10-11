@@ -13,14 +13,14 @@ import android.widget.TextView;
 import com.magnet.mmx.client.api.MMX;
 import com.roomie.roomie.R;
 import com.roomie.roomie.api.Callback;
-import com.roomie.roomie.api.MagnetApi;
+import com.roomie.roomie.api.MagnetAPI;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "MAIN";
     private EditText recipientInput;
     private LinearLayout container;
     private String username;
-    private MagnetApi magnet = MagnetApi.getInstance();
+    private MagnetAPI magnet = MagnetAPI.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
