@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.roomie.roomie"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -50,8 +50,6 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.7.0'
     // Google Maps
     compile 'com.google.android.gms:play-services-location:8.1.0'
-    // Swipeable cards
-    compile 'com.lorentzos.swipecards:library:1.0.9@aar'
     // DateTime formatting
     compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
     // MagnetMessaging
@@ -64,4 +62,6 @@ dependencies {
     compile 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
     // Cool FABs
     compile 'com.github.shell-software:fab:1.1.2'
+    // Swipeable cards
+    compile project(":libs:Swipecards")
 }

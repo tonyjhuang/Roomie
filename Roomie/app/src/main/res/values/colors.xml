@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#F57C00</color>
     <color name="colorAccent">#FFEB3B</color>
 
+    <color name="accept_green">#00E676</color>
+    <color name="reject_red">#F44336</color>
+
     <color name="white">#FFFFFF</color>
     <color name="yellow">#FFFF00</color>
     <color name="fuchsia">#FF00FF</color>

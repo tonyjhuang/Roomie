@@ -7,8 +7,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,8 +41,6 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-    // If this
-    private static final boolean SHOULD_ADVANCE_TO_MAIN = true;
     final String fonts[] = {"MavenPro-Bold.ttf",
             "Montserrat-Bold.ttf", "Raleway-SemiBold.ttf", "Righteous-Regular.ttf"};
     int i = 0;
@@ -69,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         /* Load the view and display it */
         FacebookSdk.sdkInitialize(this);
+        if (firebaseApi.isLoggedIn()) {
+            onLoggedIn();
+        }
         setContentView(R.layout.activity_login);
 
         /* *************************************
@@ -93,17 +92,8 @@ public class LoginActivity extends AppCompatActivity {
         /* Setup the progress dialog that is displayed later when authenticating with Firebase */
         mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle("Loading");
-        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setMessage("Logging in...");
         mAuthProgressDialog.setCancelable(false);
-
-        Log.d(TAG, "firebase login status: " + firebaseApi.isLoggedIn());
-        if (firebaseApi.isLoggedIn()) {
-            Log.d(TAG, "logged in...");
-            onLoggedIn();
-        }
-
-        logout();
-
 
         final TextView appName = (TextView) findViewById(R.id.app_name);
         Typeface font = Typeface.createFromAsset(getAssets(), "Montserrat-Bold.ttf");
@@ -141,27 +131,6 @@ public class LoginActivity extends AppCompatActivity {
         mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        /* If a user is currently authenticated, display a logout menu */
-        if (firebaseApi.isLoggedIn()) {
-            getMenuInflater().inflate(R.menu.menu_login, menu);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_logout) {
-            logout();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     // Logout of firebase and facebook, and reset visual state.
     private void logout() {
         firebaseApi.logout();
@@ -170,17 +139,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void onLoggedIn() {
-        supportInvalidateOptionsMenu();
-        mAuthProgressDialog.hide();
-        if (SHOULD_ADVANCE_TO_MAIN) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+        if (mAuthProgressDialog != null) {
+            mAuthProgressDialog.hide();
         }
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
     private void onLoggedOut() {
         mFacebookLoginButton.setVisibility(View.VISIBLE);
-        supportInvalidateOptionsMenu();
         mAuthProgressDialog.hide();
     }
 

@@ -110,19 +110,13 @@ public class FirebaseApiClient implements FirebaseApi {
         rina.setBio("Crazy cat lady from Brazil. Looking for a place for me and my two baby cats <3.");
         rina.clearArrays();
         rina.clearMessages();
-
+        tony.accept(rina.getId(), null);
     }
 
     private FirebaseApiClient() {
         // Check if we have a cached auth.
         this.resetData();
-        firebase.addAuthStateListener(new Firebase.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(AuthData authData) {
-                Log.d(TAG, "Found cached authdata.");
-                setAuthData(authData);
-            }
-        });
+        setAuthData(firebase.getAuth());
     }
 
     public static FirebaseApiClient getInstance() {
@@ -131,7 +125,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public boolean isLoggedIn() {
-        return authData != null && currentUser != null;
+        return firebase.getAuth() != null;
     }
 
     @Override
@@ -200,7 +194,11 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void getCurrentUser(Callback<User> callback) {
-        currentUser.retrieve(callback);
+        if(currentUser != null) {
+            currentUser.retrieve(callback);
+        } else {
+            callback.onResult(null);
+        }
     }
 
     @Override

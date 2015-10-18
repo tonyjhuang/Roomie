@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
@@ -63,9 +63,7 @@
             android:id="@+id/searchbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_margin="16dp" />
 
         <Space
             android:id="@+id/center_anchor"
@@ -82,7 +80,7 @@
             android:layout_toLeftOf="@+id/center_anchor"
             app:button_color="@color/white"
             app:button_colorPressed="#EFFF"
-            app:image="@drawable/ic_thumb_down_white_48dp"
+            app:image="@drawable/ic_thumb_down_red_48dp"
             app:type="BIG" />
 
         <com.software.shell.fab.ActionButton
@@ -94,7 +92,35 @@
             android:layout_toRightOf="@+id/center_anchor"
             app:button_color="@color/white"
             app:button_colorPressed="#EFFF"
+            app:image="@drawable/ic_thumb_up_green_48dp"
+            app:type="BIG" />
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/reject_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_toLeftOf="@+id/center_anchor"
+            android:alpha="0"
+            app:button_color="@color/reject_red"
+            app:button_colorPressed="#EFFF"
+            app:image="@drawable/ic_thumb_down_white_48dp"
+            app:shadow_color="#1000"
+            app:type="BIG" />
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/accept_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/fab_margin"
+            android:layout_toRightOf="@+id/center_anchor"
+            android:alpha="0"
+            app:button_color="@color/accept_green"
+            app:button_colorPressed="#EFFF"
             app:image="@drawable/ic_thumb_up_white_48dp"
+            app:shadow_color="#1000"
             app:type="BIG" />
 
     </RelativeLayout>

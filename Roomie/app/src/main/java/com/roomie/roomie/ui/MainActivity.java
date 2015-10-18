@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +31,7 @@ import com.software.shell.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends RoomieActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "MainActivity";
 
@@ -41,16 +40,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * to the user's sign in state as well as the Google's APIs.
      */
     protected GoogleApiClient googleApiClient;
-
+    ActionButton acceptButtonOverlay;
+    ActionButton rejectButtonOverlay;
     private FirebaseApi firebaseApi = FirebaseApiClient.getInstance();
-
     private CardsAdapter cardsAdapter;
-
     private User currentUser;
-
-    private LatLng currentlatLng;
-
+    // Set default location to Boston for debugging
+    // TODO: remove this
+    private LatLng currentLatLng = new LatLng(42.3600825, -71.0588801);
     private SwipeFlingAdapterView cardsContainer;
+    private SearchBox searchBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,24 +74,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Typeface font = Typeface.createFromAsset(getAssets(), "Montserrat-Bold.ttf");
         appName.setTypeface(font);
 
-        SearchBox searchBox = (SearchBox) findViewById(R.id.searchbox);
+        searchBox = (SearchBox) findViewById(R.id.searchbox);
         searchBox.setGoogleApiClient(googleApiClient);
         searchBox.setPlaceCallback(new Callback<Place>() {
             @Override
             public void onResult(final Place place) {
                 /* User clicked on search result */
-                currentlatLng = place.getLatLng();
+                currentLatLng = place.getLatLng();
+                Log.d(TAG, "Current loc: " + currentLatLng.toString());
                 final String address = place.getAddress().toString();
+                searchBox.setText(address);
+                searchBox.dismissDropDown();
                 cardsAdapter.clear();
+                closeKeyboard();
                 firebaseApi.getCurrentUser(new Callback<User>() {
                     @Override
                     public void onResult(User result) {
-                        new Location(result.getId(), currentlatLng, address);
-                        firebaseApi.getPotentialMatches(currentlatLng, new Callback<List<String>>() {
+                        new Location(result.getId(), currentLatLng, address);
+                        firebaseApi.getPotentialMatches(currentLatLng, new Callback<List<String>>() {
                             @Override
                             public void onResult(List<String> result) {
                                 RetrieveUsersToCreateCard(result);
-                        closeKeyboard();
                             }
                         });
                     }
@@ -112,11 +114,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onItemClicked(int itemPosition, Object dataObject) {
                 Log.d(TAG, "clock");
+                //TODO: open profile here
             }
         });
 
-        ActionButton acceptButton = (ActionButton) findViewById(R.id.accept);
-        acceptButton.setOnClickListener(new View.OnClickListener() {
+        acceptButtonOverlay = (ActionButton) findViewById(R.id.accept_overlay);
+        acceptButtonOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cardsAdapter.getCount() != 0) {
@@ -124,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }
         });
-        ActionButton rejectButton = (ActionButton) findViewById(R.id.reject);
-        rejectButton.setOnClickListener(new View.OnClickListener() {
+        rejectButtonOverlay = (ActionButton) findViewById(R.id.reject_overlay);
+        rejectButtonOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (cardsAdapter.getCount() != 0) {
@@ -138,46 +141,57 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         firebaseApi.getCurrentUser(new Callback<User>() {
             @Override
             public void onResult(User result) {
-                if (result == null) {
-                    Toast.makeText(MainActivity.this, "Failed to reach server. Are you logged in?", Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "Not logged in, not getting cards.");
-                    return;
-                }
                 currentUser = result;
                 // Retrieve potential matches from api, populate cardsAdapter.
-                if (currentlatLng != null) {
-                    firebaseApi.getPotentialMatches(currentlatLng, new Callback<List<String>>() {
-                        @Override
-                        public void onResult(List<String> result) {
-                            RetrieveUsersToCreateCard(result);
-                        }
-                    });
+                if (currentLatLng != null) {
+                    getPotentialMatches(currentLatLng);
                 }
             }
         });
     }
 
+    private void getPotentialMatches(LatLng currentLatLng) {
+        if (currentLatLng != null) {
+            firebaseApi.getPotentialMatches(currentLatLng, new Callback<List<String>>() {
+                @Override
+                public void onResult(List<String> result) {
+                    RetrieveUsersToCreateCard(result);
+                }
+            });
+        }
+    }
+
     private void closeKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(cardsContainer.getWindowToken(), 0);
     }
 
     private SwipeFlingAdapterView.onFlingListener getOnFlingListener(final CardsAdapter adapter) {
         return new SwipeFlingAdapterView.onFlingListener() {
 
-            private boolean loading = false;
-
             @Override
             public void onScroll(float v) {
-
+                Log.d(TAG, "scroll: " + v);
+                if (v > 0) {
+                    acceptButtonOverlay.setAlpha(v);
+                    rejectButtonOverlay.setAlpha(0);
+                } else if (v < 0) {
+                    rejectButtonOverlay.setAlpha(v * -1);
+                    acceptButtonOverlay.setAlpha(0);
+                } else { // v == 0
+                    acceptButtonOverlay.setAlpha(0);
+                    rejectButtonOverlay.setAlpha(0);
+                }
             }
 
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
-                Log.d("LIST", "removed object!");
+                Log.d(TAG, "removed object!");
                 adapter.remove(0);
                 cardsContainer.invalidate();
+                acceptButtonOverlay.setAlpha(0);
+                rejectButtonOverlay.setAlpha(0);
             }
 
             @Override
@@ -218,6 +232,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Toast.makeText(this, "It's a match! Go to messages to get talking.", Toast.LENGTH_SHORT).show();
     }
 
+
+    private void RetrieveUsersToCreateCard(List<String> userIds) {
+        FirebaseUtils.retrieveUsers(userIds, new Callback<List<User>>() {
+            @Override
+            public void onResult(final List<User> potentialMatches) {
+                firebaseApi.getCurrentUser(new Callback<User>() {
+                    @Override
+                    public void onResult(User currentUser) {
+                        // Filter out users that we've already seen
+                        List<User> potentialMatchesCopy = new ArrayList<User>(potentialMatches);
+                        for (User p : potentialMatches) {
+                            if (currentUser.isMatch(p.getId()) ||
+                                    currentUser.getId().equals(p.getId()) ||
+                                    currentUser.accepted(p.getId()) ||
+                                    currentUser.rejected(p.getId())) {
+                                potentialMatchesCopy.remove(p);
+                            }
+                        }
+                        cardsAdapter.addUsers(potentialMatchesCopy);
+                    }
+                });
+
+            }
+        });
+    }
+
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
@@ -255,29 +296,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return super.onOptionsItemSelected(item);
     }
 
-    private void RetrieveUsersToCreateCard(List<String> result) {
-        FirebaseUtils.retrieveUsers(result, new Callback<List<User>>() {
-            @Override
-            public void onResult(final List<User> potentialMatches) {
-                firebaseApi.getCurrentUser(new Callback<User>() {
-                    @Override
-                    public void onResult(User currentUser) {
-                        // Filter out users that we've already seen
-                        List<User> potentialMatchesCopy = new ArrayList<User>(potentialMatches);
-                        for(User p: potentialMatches) {
-                            if(currentUser.isMatch(p.getId()) ||
-                                    currentUser.getId().equals(p.getId()) ||
-                                    currentUser.accepted(p.getId()) ||
-                                    currentUser.rejected(p.getId())) {
-                                potentialMatchesCopy.remove(p);
-                            }
-                         }
-                        cardsAdapter.addUsers(potentialMatchesCopy);
-                    }
-                });
-
-            }
-        });
-    }
 
 }

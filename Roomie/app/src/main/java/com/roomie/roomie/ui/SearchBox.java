@@ -12,9 +12,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
@@ -51,10 +52,11 @@ public class SearchBox extends FrameLayout {
     private static final LatLngBounds BOUNDS_USA =
             new LatLngBounds(new LatLng(25.284438, -125.859375), new LatLng(48.545705, -66.093750));
 
-    private AutoCompleteTextView search;
+    private AutoCompleteTextViewBackListener search;
     private ImageView clear;
     private PlaceAutocompleteAdapter autocompleteAdapter;
     private GoogleApiClient client;
+    private Callback<Place> placeCallback;
 
     public SearchBox(Context context) {
         this(context, null);
@@ -64,16 +66,34 @@ public class SearchBox extends FrameLayout {
         this(context, attrs, 0);
     }
 
-    public SearchBox(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SearchBox(final Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.partial_search_box, this, true);
         clear = (ImageView) findViewById(R.id.icon_clear);
-        search = (AutoCompleteTextView) findViewById(R.id.search);
+        search = (AutoCompleteTextViewBackListener) findViewById(R.id.search);
+        search.setOnEditTextImeBackListener(new AutoCompleteTextViewBackListener.ImeBackListener() {
+            @Override
+            public void onImeBack() {
+                removeFocus();
+            }
+        });
 
         clear.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                search.setFocusable(false);
+                search.setFocusableInTouchMode(false);
                 search.setText("");
+                search.setFocusable(true);
+                search.setFocusableInTouchMode(true);
+                showKeyboard();
+            }
+        });
+        findViewById(R.id.card_container).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "click!");
+                showKeyboard();
             }
         });
 
@@ -97,7 +117,10 @@ public class SearchBox extends FrameLayout {
         search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                //if(actionId )
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    onPlaceSelected(autocompleteAdapter.getTopResult());
+                    return true;
+                }
                 return false;
             }
         });
@@ -128,6 +151,25 @@ public class SearchBox extends FrameLayout {
         };
     }
 
+    public void setText(String text) {
+        search.setText(text);
+    }
+
+    public void dismissDropDown() {
+        search.dismissDropDown();
+    }
+
+    public void removeFocus() {
+        Log.d(TAG, "removing focus!");
+        search.clearFocus();
+    }
+
+    private void showKeyboard() {
+        search.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
     public void setGoogleApiClient(GoogleApiClient client) {
         this.client = client;
         autocompleteAdapter = new PlaceAutocompleteAdapter(getContext(), client, BOUNDS_USA, null);
@@ -135,14 +177,14 @@ public class SearchBox extends FrameLayout {
     }
 
     public void setPlaceCallback(Callback<Place> callback) {
+        this.placeCallback = callback;
         search.setOnItemClickListener(getClickListener(
-                client, autocompleteAdapter, callback));
+                client, autocompleteAdapter));
     }
 
     public AdapterView.OnItemClickListener getClickListener(
             final GoogleApiClient googleApiClient,
-            final PlaceAutocompleteAdapter adapter,
-            final Callback callback) {
+            final PlaceAutocompleteAdapter adapter) {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -152,24 +194,26 @@ public class SearchBox extends FrameLayout {
              read the place ID and title.
               */
                 final AutocompletePrediction item = adapter.getItem(position);
-                final String placeId = item.getPlaceId();
-                final CharSequence primaryText = item.getPrimaryText(null);
+                onPlaceSelected(item);
+            }
+        };
+    }
 
-                Log.i(TAG, "Autocomplete item selected: " + primaryText);
+    private void onPlaceSelected(AutocompletePrediction selectedPlace) {
+        final String placeId = selectedPlace.getPlaceId();
+        final CharSequence primaryText = selectedPlace.getPrimaryText(null);
+        search.dismissDropDown();
+
+        Log.i(TAG, "Autocomplete item selected: " + primaryText);
 
             /*
              Issue a request to the Places Geo Data API to retrieve a Place object with additional
              details about the place.
               */
-                PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
-                        .getPlaceById(googleApiClient, placeId);
-                placeResult.setResultCallback(getUpdatePlaceDetailsCallback(callback));
-
-                Toast.makeText(parent.getContext(), "Clicked: " + primaryText,
-                        Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-            }
-        };
+        PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
+                .getPlaceById(client, placeId);
+        placeResult.setResultCallback(getUpdatePlaceDetailsCallback(placeCallback));
+        Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
     }
 
     /**
@@ -260,6 +304,14 @@ public class SearchBox extends FrameLayout {
             textView2.setTextColor(getContext().getResources().getColor(R.color.gray));
 
             return row;
+        }
+
+        public AutocompletePrediction getTopResult() {
+            if (mResultList != null && mResultList.size() > 0) {
+                return mResultList.get(0);
+            } else {
+                return null;
+            }
         }
 
         /**

@@ -142,10 +142,12 @@ public class User {
                     user.userReference.child("acceptList").setValue(user.acceptList);
                     user.addMatch(User.this.id);
                     User.this.addMatch(user.getId());
+                    if(callback != null)
                     callback.onResult(User.this);
                 } else {
                     User.this.acceptList.add(user.id);
                     User.this.userReference.child("acceptList").setValue(User.this.acceptList);
+                    if(callback != null)
                     callback.onResult(User.this);
                 }
             }
