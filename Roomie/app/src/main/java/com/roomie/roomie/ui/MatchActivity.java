@@ -106,7 +106,7 @@ public class MatchActivity extends RoomieActivity {
         public void prepare(View target) {
             getAnimatorAgent().playTogether(
                     ObjectAnimator.ofFloat(target, "alpha", 0, 1),
-                    ObjectAnimator.ofFloat(target, "translationY", target.getHeight() / 8, 0)
+                    ObjectAnimator.ofFloat(target, "translationY", target.getHeight() / 16, 0)
             );
         }
     }
