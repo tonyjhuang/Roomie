@@ -62,7 +62,7 @@ public class MatchActivity extends RoomieActivity {
 
     private void animateIn() {
         YoYo.with(new FadeInUpAnimator())
-                .duration(300)
+                .duration(350)
                 .playOn(matchView);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -88,7 +88,7 @@ public class MatchActivity extends RoomieActivity {
         public void prepare(View target) {
             getAnimatorAgent().playTogether(
                     ObjectAnimator.ofFloat(target, "alpha", 0, 1, 1, 1),
-                    ObjectAnimator.ofFloat(target, "translationY", -target.getHeight(), 30, 0));
+                    ObjectAnimator.ofFloat(target, "translationY", -target.getHeight(), 40, 0));
         }
     }
 
