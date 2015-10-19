@@ -26,6 +26,7 @@ import com.roomie.roomie.api.FirebaseApiClient;
 import com.roomie.roomie.api.FirebaseUtils;
 import com.roomie.roomie.api.models.Location;
 import com.roomie.roomie.api.models.User;
+import com.roomie.roomie.ui.partials.SearchBox;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
@@ -171,7 +172,6 @@ public class MainActivity extends RoomieActivity implements GoogleApiClient.OnCo
 
             @Override
             public void onScroll(float v) {
-                Log.d(TAG, "scroll: " + v);
                 if (v > 0) {
                     acceptButtonOverlay.setAlpha(v);
                     rejectButtonOverlay.setAlpha(0);
@@ -229,7 +229,9 @@ public class MainActivity extends RoomieActivity implements GoogleApiClient.OnCo
 
     private void onMatch(String matchedUserId) {
         Log.d(TAG, "LUCKY YOU! YOU GOT A MATCH!!!");
-        Toast.makeText(this, "It's a match! Go to messages to get talking.", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MatchActivity.class);
+        intent.putExtra("USER_ID", matchedUserId);
+        startActivity(intent);
     }
 
 
@@ -285,7 +287,9 @@ public class MainActivity extends RoomieActivity implements GoogleApiClient.OnCo
         int id = item.getItemId();
 
         if (id == R.id.action_profile) {
-            firebaseApi.resetData();
+            Intent intent = new Intent(this, MatchActivity.class);
+            intent.putExtra("USER_ID", "1292436436");
+            startActivity(intent);
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_messages) {

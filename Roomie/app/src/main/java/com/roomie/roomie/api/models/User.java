@@ -19,7 +19,16 @@ import java.util.Random;
  */
 public class User {
 
-    public User(String id){
+    private String id;
+    private String profilePicture;
+    private String name;
+    private Firebase userReference;
+    private String bio;
+    private List<String> rejectList = new ArrayList<String>();
+    private List<String> acceptList = new ArrayList<String>();
+    private List<String> matchesList = new ArrayList<String>();
+
+    public User(String id) {
         this.id = id;
         this.userReference = FirebaseApiClient.firebase.child("users").child(this.id);
     }
@@ -28,7 +37,7 @@ public class User {
         this("100003674382044");
     }
 
-    public void retrieve(final Callback<User> callback){
+    public void retrieve(final Callback<User> callback) {
         this.userReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -100,29 +109,29 @@ public class User {
         return acceptList;
     }
 
-    public boolean accepted(String id){
-        if (acceptList.contains(id)){
+    public boolean accepted(String id) {
+        if (acceptList.contains(id)) {
             return true;
         }
         return false;
     }
 
-    public boolean rejected(String id){
-        if (rejectList.contains(id)){
+    public boolean rejected(String id) {
+        if (rejectList.contains(id)) {
             return true;
         }
         return false;
     }
 
-    public boolean isMatch(String id){
-        if (matchesList.contains(id)){
+    public boolean isMatch(String id) {
+        if (matchesList.contains(id)) {
             return true;
         }
         return false;
     }
 
-    public void addMatch(String id){
-        if (matchesList.contains(id) || id.equals(this.getId())){
+    public void addMatch(String id) {
+        if (matchesList.contains(id) || id.equals(this.getId())) {
             return;
         }
         matchesList.add(id);
@@ -130,7 +139,7 @@ public class User {
     }
 
     public void accept(String id, final Callback<User> callback) {
-        if (id.equals(this.getId())){
+        if (id.equals(this.getId())) {
             return;
         }
         User userMatched = new User(id);
@@ -142,20 +151,22 @@ public class User {
                     user.userReference.child("acceptList").setValue(user.acceptList);
                     user.addMatch(User.this.id);
                     User.this.addMatch(user.getId());
-                    if(callback != null)
-                    callback.onResult(User.this);
+                    if (callback != null) {
+                        callback.onResult(User.this);
+                    }
                 } else {
                     User.this.acceptList.add(user.id);
                     User.this.userReference.child("acceptList").setValue(User.this.acceptList);
-                    if(callback != null)
-                    callback.onResult(User.this);
+                    if (callback != null) {
+                        callback.onResult(User.this);
+                    }
                 }
             }
         });
 
     }
 
-    public void clearArrays(){
+    public void clearArrays() {
         rejectList.clear();
         acceptList.clear();
         matchesList.clear();
@@ -164,7 +175,7 @@ public class User {
         this.userReference.child("matchesList").setValue(matchesList);
     }
 
-    public void clearMessages(){
+    public void clearMessages() {
         this.userReference.child("messages").setValue(null);
     }
 
@@ -183,11 +194,6 @@ public class User {
         return traits;
     }
 
-    private String id;
-    private String profilePicture;
-    private String name;
-    private Firebase userReference;
-
     public String getBio() {
         return bio;
     }
@@ -196,10 +202,4 @@ public class User {
         this.bio = bio;
         this.userReference.child("bio").setValue(bio);
     }
-
-    private String bio;
-
-    private List<String> rejectList = new ArrayList<String>();
-    private List<String> acceptList = new ArrayList<String>();
-    private List<String> matchesList = new ArrayList<String>();
 }

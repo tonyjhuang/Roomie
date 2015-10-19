@@ -1,4 +1,4 @@
-package com.roomie.roomie.ui;
+package com.roomie.roomie.ui.partials;
 
 import android.content.Context;
 import android.graphics.Typeface;

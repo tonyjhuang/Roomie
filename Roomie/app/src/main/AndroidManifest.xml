@@ -57,6 +57,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity android:name=".ui.MatchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MatchActivityTheme">
+
+        </activity>
     </application>
 
 </manifest>

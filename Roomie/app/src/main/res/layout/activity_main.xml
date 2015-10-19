@@ -59,7 +59,7 @@
             app:min_adapter_stack="1000"
             app:rotation_degrees="16" />
 
-        <com.roomie.roomie.ui.SearchBox
+        <com.roomie.roomie.ui.partials.SearchBox
             android:id="@+id/searchbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

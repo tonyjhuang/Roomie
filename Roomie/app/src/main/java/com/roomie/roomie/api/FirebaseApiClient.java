@@ -27,12 +27,21 @@ public class FirebaseApiClient implements FirebaseApi {
 
     public static Firebase firebase = new Firebase(FIREBASE_URL);
     public static GeoFire geofire = new GeoFire(firebase.child("locations"));
+    private static FirebaseApiClient instance = new FirebaseApiClient();
     private MagnetApi magnet = MagnetApi.getInstance();
     private User currentUser;
     private AuthData authData;
     private Message messageModel = new Message();
 
-    private static FirebaseApiClient instance = new FirebaseApiClient();
+    private FirebaseApiClient() {
+        // Check if we have a cached auth.
+        this.resetData();
+        setAuthData(firebase.getAuth());
+    }
+
+    public static FirebaseApiClient getInstance() {
+        return instance;
+    }
 
     public void resetData() {
         User ola = new User("100000612016996");
@@ -54,11 +63,7 @@ public class FirebaseApiClient implements FirebaseApi {
         david.setName("David Brown");
         david.setBio("I prefer living by myself but you are welcome to crash in my place if you have to.");
         david.clearArrays();
-        david.accept("1271901889502313", new Callback<User>() {
-            @Override
-            public void onResult(User result) {
-            }
-        });
+        david.accept("1271901889502313", null);
         new Location(david.getId(), new LatLng(33.683947, -117.794694), "Irvine");
         new Location(david.getId(), new LatLng(37.368830, -122.036350), "Sunnyvale");
         User ally = new User("1292436436");
@@ -68,11 +73,7 @@ public class FirebaseApiClient implements FirebaseApi {
         new Location(ally.getId(), new LatLng(40.058324, -74.405661), "Jersey");
         ally.setBio("WHAT ARE THOOOOOOOOOOOOOOOOOOSE?");
         ally.clearArrays();
-        ally.accept("733994556733017", new Callback<User>() {
-            @Override
-            public void onResult(User result) {
-            }
-        });
+        ally.accept("733994556733017", null);
         User jacob = new User("735156277");
         jacob.setProfilePicture("https://scontent-sjc2-1.xx.fbcdn.net/hphotos-xlp1/t31.0-8/11224840_10153430472741278_289750567507577625_o.jpg");
         jacob.setName("Jacob Sharf");
@@ -111,16 +112,7 @@ public class FirebaseApiClient implements FirebaseApi {
         rina.clearArrays();
         rina.clearMessages();
         tony.accept(rina.getId(), null);
-    }
-
-    private FirebaseApiClient() {
-        // Check if we have a cached auth.
-        this.resetData();
-        setAuthData(firebase.getAuth());
-    }
-
-    public static FirebaseApiClient getInstance() {
-        return instance;
+        jonathan.accept(tony.getId(), null);
     }
 
     @Override
@@ -129,7 +121,7 @@ public class FirebaseApiClient implements FirebaseApi {
     }
 
     @Override
-    public String getCurrentUserId(){
+    public String getCurrentUserId() {
         return currentUser.getId();
     }
 
@@ -140,13 +132,13 @@ public class FirebaseApiClient implements FirebaseApi {
             public void onAuthenticated(AuthData authData) {
                 if (authData == null) {
                     Log.d(TAG, "Failed to log in, authData == null");
-                    if(callback != null) {
+                    if (callback != null) {
                         callback.onResult(false);
                     }
                 } else {
                     Log.d(TAG, "logged in.");
                     setAuthData(authData);
-                    if(callback != null) {
+                    if (callback != null) {
                         callback.onResult(true);
                     }
                 }
@@ -155,7 +147,7 @@ public class FirebaseApiClient implements FirebaseApi {
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 Log.e(TAG, "Failed to login: " + firebaseError.getMessage());
-                if(callback != null) {
+                if (callback != null) {
                     callback.onResult(false);
                 }
             }
@@ -166,7 +158,7 @@ public class FirebaseApiClient implements FirebaseApi {
     private void setAuthData(AuthData authData) {
         this.authData = authData;
         User currentUser = null;
-        if(authData != null) {
+        if (authData != null) {
             final String userId = (String) authData.getProviderData().get("id");
             currentUser = new User(userId);
             currentUser.setName((authData.getProviderData().get("displayName").toString()));
@@ -194,7 +186,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void getCurrentUser(Callback<User> callback) {
-        if(currentUser != null) {
+        if (currentUser != null) {
             currentUser.retrieve(callback);
         } else {
             callback.onResult(null);
@@ -238,7 +230,7 @@ public class FirebaseApiClient implements FirebaseApi {
 
     @Override
     public void sendMessage(String recipientId, String message, Callback<Boolean> callback) {
-        if(!isLoggedIn()) {
+        if (!isLoggedIn()) {
             Log.e(TAG, "No user found, aborting message.");
             callback.onResult(false);
             return;
